@@ -1,0 +1,35 @@
+{
+  "name": "FilmSphere-Server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node dist/server.js",
+    "build": "prisma generate && tsc",
+    "dev": "tsx watch src/server.ts",
+    "postinstall": "prisma generate",
+    "migrate": "prisma migrate dev",
+    "generate": "prisma generate",
+    "studio": "prisma studio",
+    "lint": "eslint ./src",
+    "lint:fix": "eslint ./src --fix",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "type": "module",
+  "author": "Saiful Islam",
+  "license": "ISC",
+  "packageManager": "pnpm@10.29.3",
+  "dependencies": {
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.5.0",
+    "eslint": "^10.1.0",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.2",
+    "typescript-eslint": "^8.57.2"
+  }
+}
