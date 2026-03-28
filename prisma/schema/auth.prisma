@@ -36,7 +36,7 @@ model User {
   @@index([isDeleted], name: "idx_user_is_deleted")
 
   // 📦 Table mapping
-  @@map("users")
+  @@map("user")
 }
 
 model Session {

@@ -11,8 +11,8 @@ interface EnvConfig {
   FRONTEND_URL: string;
   ACCESS_TOKEN_SECRET: string;
   REFRESH_TOKEN_SECRET: string;
-  ACCESS_TOKEN_IN: string;
-  REFRESH_TOKEN_IN: string;
+  ACCESS_TOKEN_EXPIRES_IN: string;
+  REFRESH_TOKEN_EXPIRES_IN: string;
   ADMIN_EMAIL: string;
   ADMIN_PASSWORD: string;
   CLOUDINARY: {
@@ -46,8 +46,8 @@ const loadEnvVariables = (): EnvConfig => {
     'FRONTEND_URL',
     'ACCESS_TOKEN_SECRET',
     'REFRESH_TOKEN_SECRET',
-    'ACCESS_TOKEN_IN',
-    'REFRESH_TOKEN_IN',
+    'ACCESS_TOKEN_EXPIRES_IN',
+    'REFRESH_TOKEN_EXPIRES_IN',
     'ADMIN_EMAIL',
     'ADMIN_PASSWORD',
     'CLOUDINARY_CLOUD_NAME',
@@ -85,10 +85,10 @@ const loadEnvVariables = (): EnvConfig => {
     BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET as string,
     BETTER_AUTH_URL: process.env.BETTER_AUTH_URL as string,
     FRONTEND_URL: process.env.FRONTEND_URL as string,
-    ACCESS_TOKEN_SECRET: process.env.ACCESS_TOKEN as string,
-    REFRESH_TOKEN_SECRET: process.env.REFRESH_TOKEN as string,
-    ACCESS_TOKEN_IN: process.env.ACCESS_TOKEN_IN as string,
-    REFRESH_TOKEN_IN: process.env.REFRESH_TOKEN_IN as string,
+    ACCESS_TOKEN_SECRET: process.env.ACCESS_TOKEN_SECRET as string,
+    REFRESH_TOKEN_SECRET: process.env.REFRESH_TOKEN_SECRET as string,
+    ACCESS_TOKEN_EXPIRES_IN: process.env.ACCESS_TOKEN_EXPIRES_IN as string,
+    REFRESH_TOKEN_EXPIRES_IN: process.env.REFRESH_TOKEN_EXPIRES_IN as string,
     ADMIN_EMAIL: process.env.ADMIN_EMAIL as string,
     ADMIN_PASSWORD: process.env.ADMIN_PASSWORD as string,
     CLOUDINARY: {
