@@ -6,6 +6,5 @@ dist
 
 .env*
 
-src/generate
-
 .vercel
+/src/generated
