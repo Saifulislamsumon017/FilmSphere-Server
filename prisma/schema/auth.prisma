@@ -1,17 +1,42 @@
 
 model User {
-  id            String    @id
+
+  id            String      @id @default(uuid(7))
+
   name          String
-  email         String
-  emailVerified Boolean   @default(false)
+  email         String      @unique
+  emailVerified Boolean     @default(false)
   image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  
+  role          UserRole    @default(USER)
+  status        UserStatus  @default(ACTIVE)
+
+    // 🔥 Soft delete
+  isDeleted     Boolean     @default(false)
+  deletedAt     DateTime?
+
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  // 🔗 Relations
   sessions      Session[]
   accounts      Account[]
+  reviews       Review[]
+  comments      Comment[]
+  likes         Like[]
+  watchlist     Watchlist[]
+  subscriptions Subscription[]
+  purchases     Purchase[]
+  admin         Admin?
+  
+  // 🚀 Indexing 
+  @@index([email], name: "idx_user_email")
+  @@index([role], name: "idx_user_role")
+  @@index([status], name: "idx_user_status")
+  @@index([isDeleted], name: "idx_user_is_deleted")
 
-  @@unique([email])
-  @@map("user")
+  // 📦 Table mapping
+  @@map("users")
 }
 
 model Session {

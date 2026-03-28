@@ -7,4 +7,4 @@ dist
 .env*
 
 .vercel
-/src/generated
+# /src/generated

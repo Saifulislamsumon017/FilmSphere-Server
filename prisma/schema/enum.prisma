@@ -1,0 +1,56 @@
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum ReviewStatus {
+  PENDING    
+  APPROVED   
+  REJECTED   
+}
+
+enum PricingType {
+  FREE
+  PREMIUM
+}
+
+enum PurchaseType {
+  BUY       
+  RENT       
+}
+
+enum PurchaseStatus {
+  ACTIVE
+  EXPIRED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  EXPIRED
+  CANCELLED
+}
+
+enum SubscriptionPlan {
+  MONTHLY
+  YEARLY
+}
+
+enum UserStatus {
+  ACTIVE
+  BANNED
+  SUSPENDED
+  DELETED
+}
+
+enum ContentType {
+  MOVIE
+  SERIES
+}

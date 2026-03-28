@@ -1,0 +1,62 @@
+model Movie {
+  id                String   @id @default(uuid(7))
+
+  title             String   @unique
+  synopsis          String   @db.Text
+  thumbnail         String?
+
+  genre             String[]
+  language          String[]
+  releaseYear       Int
+
+  director          String
+  cast              String[]
+  streamingPlatform String[]
+
+
+  /*     */
+
+  type              ContentType
+
+  seasons           Int?
+  episodes          Int?
+  runtime           Int?
+
+  streamingLink     String?
+
+  pricing           PricingType @default(FREE)
+  buyPrice          Float?
+  rentPrice         Float?
+
+  stripeBuyPriceId  String?
+  stripeRentPriceId String?
+
+  avgRating         Float   @default(0.0)
+  reviewCount       Int     @default(0)
+
+  // 🔥 Soft delete (consistency with User/Admin/Comment)
+  isDeleted         Boolean   @default(false)
+  deletedAt         DateTime?
+
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  // 🔗 Relations
+  reviews           Review[]
+  watchlists        Watchlist[]
+  purchases         Purchase[]
+
+  // 🚀 Indexing 
+  @@index([title], name: "idx_movie_title")
+  @@index([type], name: "idx_movie_type")
+  @@index([releaseYear], name: "idx_movie_release_year")
+  @@index([avgRating], name: "idx_movie_avg_rating")
+  @@index([pricing], name: "idx_movie_pricing")
+  @@index([isDeleted], name: "idx_movie_is_deleted")
+
+  // 🔥 Composite index (very useful)
+  @@index([type, releaseYear], name: "idx_movie_type_release")
+
+  // 📦 Table mapping
+  @@map("movies")
+}

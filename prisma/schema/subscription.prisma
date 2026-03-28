@@ -1,0 +1,33 @@
+model Subscription {
+  id            String               @id @default(uuid(7))
+
+  userId        String
+  planType      SubscriptionPlan
+
+  status        SubscriptionStatus   @default(ACTIVE)
+  paymentStatus PaymentStatus        @default(PENDING)
+
+  stripeId      String?   
+  stripePriceId String?   
+
+  startDate     DateTime  @default(now())
+  endDate       DateTime?
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+
+  // 🔗 Relations
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  // 🚀 Indexing 
+  @@index([userId], name: "idx_subscription_user")
+  @@index([status], name: "idx_subscription_status")
+  @@index([paymentStatus], name: "idx_subscription_payment_status")
+
+  // 🔥 Composite index (very useful)
+  @@index([userId, status], name: "idx_user_active_subscription")
+
+  // 📦 Table mapping
+  @@map("subscriptions")
+}

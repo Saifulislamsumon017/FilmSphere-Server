@@ -1,0 +1,36 @@
+model Purchase {
+  id                  String          @id @default(uuid(7))
+
+  userId              String
+  movieId             String
+
+  purchaseType        PurchaseType    
+  status              PurchaseStatus  @default(ACTIVE)
+
+  paymentStatus       PaymentStatus   @default(PENDING)
+
+  amount              Float
+  stripeTransactionId String?
+
+  expiresAt           DateTime?
+
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+
+  // 🔗 Relations
+  user                User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  movie               Movie  @relation(fields: [movieId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  // 🚀 Constraints
+  @@unique([userId, movieId, purchaseType], name: "uniq_user_movie_purchase")
+
+  // 🚀 Indexing 
+  @@index([userId], name: "idx_purchase_user")
+  @@index([movieId], name: "idx_purchase_movie")
+  @@index([purchaseType], name: "idx_purchase_type")
+  @@index([status], name: "idx_purchase_status")
+  @@index([paymentStatus], name: "idx_purchase_payment_status")
+
+  // 📦 Table mapping
+  @@map("purchases")
+}
