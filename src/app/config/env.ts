@@ -3,14 +3,14 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 interface EnvConfig {
-  NODE_DEV: string;
+  NODE_ENV: string;
   PORT: string;
   DATABASE_URL: string;
   BETTER_AUTH_SECRET: string;
   BETTER_AUTH_URL: string;
   FRONTEND_URL: string;
-  ACCESS_TOKEN: string;
-  REFRESH_TOKEN: string;
+  ACCESS_TOKEN_SECRET: string;
+  REFRESH_TOKEN_SECRET: string;
   ACCESS_TOKEN_IN: string;
   REFRESH_TOKEN_IN: string;
   ADMIN_EMAIL: string;
@@ -38,14 +38,14 @@ interface EnvConfig {
 
 const loadEnvVariables = (): EnvConfig => {
   const requireEnvVariable = [
-    'NODE_DEV',
+    'NODE_ENV',
     'PORT',
     'DATABASE_URL',
     'BETTER_AUTH_SECRET',
     'BETTER_AUTH_URL',
     'FRONTEND_URL',
-    'ACCESS_TOKEN',
-    'REFRESH_TOKEN',
+    'ACCESS_TOKEN_SECRET',
+    'REFRESH_TOKEN_SECRET',
     'ACCESS_TOKEN_IN',
     'REFRESH_TOKEN_IN',
     'ADMIN_EMAIL',
@@ -79,14 +79,14 @@ const loadEnvVariables = (): EnvConfig => {
     }
   });
   return {
-    NODE_DEV: process.env.NODE_DEV as string,
+    NODE_ENV: process.env.NODE_ENV as string,
     PORT: process.env.PORT as string,
     DATABASE_URL: process.env.DATABASE_URL as string,
     BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET as string,
     BETTER_AUTH_URL: process.env.BETTER_AUTH_URL as string,
     FRONTEND_URL: process.env.FRONTEND_URL as string,
-    ACCESS_TOKEN: process.env.ACCESS_TOKEN as string,
-    REFRESH_TOKEN: process.env.REFRESH_TOKEN as string,
+    ACCESS_TOKEN_SECRET: process.env.ACCESS_TOKEN as string,
+    REFRESH_TOKEN_SECRET: process.env.REFRESH_TOKEN as string,
     ACCESS_TOKEN_IN: process.env.ACCESS_TOKEN_IN as string,
     REFRESH_TOKEN_IN: process.env.REFRESH_TOKEN_IN as string,
     ADMIN_EMAIL: process.env.ADMIN_EMAIL as string,
