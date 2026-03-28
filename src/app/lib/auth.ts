@@ -1,7 +1,6 @@
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { prisma } from './prisma.js';
-
 import { bearer, emailOTP } from 'better-auth/plugins';
 import { envVars } from '../config/env.js';
 import { UserRole, UserStatus } from '../../generated/prisma/enums.js';
