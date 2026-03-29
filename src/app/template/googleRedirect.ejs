@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Google Login</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Inter", sans-serif;
+    }
+
+    body {
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #e0f7fa, #fffde7);
+      color: #333;
+      overflow: hidden;
+    }
+
+    .container {
+      text-align: center;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 50px 35px;
+      border-radius: 25px;
+      box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
+      max-width: 400px;
+      width: 90%;
+      transform: translateY(-5px);
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+
+      0%,
+      100% {
+        transform: translateY(-5px);
+      }
+
+      50% {
+        transform: translateY(5px);
+      }
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 25px;
+      color: #00796b;
+    }
+
+    p {
+      font-size: 1rem;
+      margin-bottom: 30px;
+      line-height: 1.5;
+      color: #555;
+    }
+
+    .loader-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 25px;
+      gap: 15px;
+    }
+
+    .loader {
+      border: 5px solid rgba(0, 0, 0, 0.1);
+      border-top: 5px solid #00796b;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite, pulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.1);
+      }
+    }
+
+    .google-logo {
+      width: 40px;
+      height: 40px;
+      animation: bounce 1.5s infinite;
+    }
+
+    @keyframes bounce {
+
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-5px);
+      }
+    }
+
+    .error {
+      margin-top: 20px;
+      background: rgba(255, 205, 210, 0.3);
+      padding: 12px 15px;
+      border-radius: 12px;
+      color: #b71c1c;
+      font-size: 0.95rem;
+      box-shadow: 0 3px 10px rgba(183, 28, 28, 0.2);
+      animation: fadeIn 0.5s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 40px 20px;
+      }
+
+      h1 {
+        font-size: 1.6rem;
+      }
+
+      .loader {
+        width: 40px;
+        height: 40px;
+        border-width: 4px;
+      }
+
+      .google-logo {
+        width: 30px;
+        height: 30px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Redirecting to Google...</h1>
+    <div class="loader-container">
+      <div class="loader"></div>
+      <img
+        src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/3840px-Google_%22G%22_logo.svg.png"
+        alt="Google Logo" class="google-logo">
+    </div>
+    <p>Please wait while we securely redirect you to sign in.</p>
+    <div id="errorMessage"></div>
+  </div>
+
+  <script>
+    (async () => {
+      try {
+        const response = await fetch("<%= betterAuthUrl %>/api/auth/sign-in/social", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({
+            provider: "google",
+            callbackURL: "<%= callbackURL %>",
+          }),
+        });
+
+        const data = await response.json();
+
+        if (data.url) {
+          window.location.href = data.url;
+        } else {
+          document.getElementById("errorMessage").innerHTML = `
+            <div class="error">
+              ⚠️ Error occurred while redirecting to Google. Please try again later.
+            </div>`;
+        }
+      } catch (error) {
+        document.getElementById("errorMessage").innerHTML = `
+            <div class="error">
+              ⚠️ Error occurred while redirecting to Google. Please try again later.
+              <br>${error}
+            </div>`;
+      }
+    })();
+  </script>
+</body>
+
+</html>
