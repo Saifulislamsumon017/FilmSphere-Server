@@ -1,11 +1,9 @@
 import { Request, Response } from 'express';
-import { StatusCodes } from 'http-status-codes';
+import status from 'http-status';
 
-const notFound = (req: Request, res: Response) => {
-  res.status(StatusCodes.NOT_FOUND).json({
+export const notFound = (req: Request, res: Response) => {
+  res.status(status.NOT_FOUND).json({
     success: false,
-    message: `Route ${req.originalUrl} not found`,
+    message: `Route ${req.originalUrl} Not Found`,
   });
 };
-
-export default notFound;
