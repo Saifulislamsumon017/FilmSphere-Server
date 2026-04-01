@@ -23,3 +23,14 @@ export interface IResetPasswordPayload {
   otp: string;
   newPassword: string;
 }
+
+export interface IGetNewTokenPayload {
+  refreshToken: string;
+  sessionToken: string;
+}
+
+export interface IRefreshTokenResponse {
+  accessToken: string;
+  refreshToken: string;
+  sessionToken: string;
+}

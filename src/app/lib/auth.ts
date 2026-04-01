@@ -18,29 +18,6 @@ export const auth = betterAuth({
     requireEmailVerification: true,
   },
 
-  socialProviders: {
-    google: {
-      clientId: envVars.GOOGLE_CLIENT_ID,
-      clientSecret: envVars.GOOGLE_CLIENT_SECRET,
-      callbackUrl: envVars.GOOGLE_CALLBACK_URL,
-      mapProfileToUser: () => {
-        return {
-          role: UserRole.USER,
-          status: UserStatus.ACTIVE,
-          emailVerified: true,
-          isDeleted: false,
-          deletedAt: null,
-        };
-      },
-    },
-  },
-
-  emailVerification: {
-    sendOnSignUp: true,
-    sendOnSignIn: true,
-    autoSignInAfterVerification: true,
-  },
-
   user: {
     additionalFields: {
       role: {
@@ -53,12 +30,6 @@ export const auth = betterAuth({
         type: 'string',
         required: true,
         defaultValue: UserStatus.ACTIVE,
-      },
-
-      needPasswordChange: {
-        type: 'boolean',
-        required: true,
-        defaultValue: false,
       },
 
       isDeleted: {
@@ -75,10 +46,40 @@ export const auth = betterAuth({
     },
   },
 
+  // emailVerification: {
+  //   sendOnSignUp: true,
+  //   sendOnSignIn: true,
+  //   autoSignInAfterVerification: true,
+  // },
+
+  // 📧 Email Verification (LINK SYSTEM)
+  emailVerification: {
+    sendOnSignUp: true,
+    sendOnSignIn: true,
+    autoSignInAfterVerification: true,
+
+    async sendVerificationEmail({ user, url }) {
+      try {
+        await sendEmail({
+          to: user.email,
+          subject: 'Verify your email',
+          templateName: 'verify-email',
+          templateData: {
+            name: user.name,
+            verifyLink: url,
+          },
+        });
+      } catch (err) {
+        console.error('Verification email failed:', err);
+      }
+    },
+  },
+
   plugins: [
     bearer(),
     emailOTP({
-      overrideDefaultEmailVerification: true,
+      // overrideDefaultEmailVerification: true,
+
       async sendVerificationOTP({ email, otp, type }) {
         if (type === 'email-verification') {
           const user = await prisma.user.findUnique({
@@ -136,6 +137,23 @@ export const auth = betterAuth({
       otpLength: 6,
     }),
   ],
+
+  socialProviders: {
+    google: {
+      clientId: envVars.GOOGLE_CLIENT_ID,
+      clientSecret: envVars.GOOGLE_CLIENT_SECRET,
+      callbackUrl: envVars.GOOGLE_CALLBACK_URL,
+      mapProfileToUser: () => {
+        return {
+          role: UserRole.USER,
+          status: UserStatus.ACTIVE,
+          emailVerified: true,
+          isDeleted: false,
+          deletedAt: null,
+        };
+      },
+    },
+  },
 
   session: {
     expiresIn: 60 * 60 * 60 * 24, // 1 day in seconds

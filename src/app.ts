@@ -8,8 +8,11 @@ import cookieParser from 'cookie-parser';
 import { IndexRoutes } from './app/routes/index.js';
 import { globalErrorHandler } from './app/middleware/globalErrorHandler.js';
 import { notFound } from './app/middleware/notFound.js';
+import { seedAdmin } from './app/seedAdmin/seedAdmin.js';
 
 const app: Application = express();
+// Initialize default admin account on application startup
+seedAdmin();
 
 app.set('view engine', 'ejs');
 app.set('views', path.resolve(process.cwd(), `src/app/templates`));
@@ -64,7 +67,11 @@ app.use('/api/v1', IndexRoutes);
 
 // Basic route
 app.get('/', (req: Request, res: Response) => {
-  res.send('FilmSphere API is up and running successfully');
+  res.status(200).json({
+    success: true,
+    message: 'FilmSphere API is up and running successfully',
+  });
+  // res.send('FilmSphere API is up and running successfully');
 });
 
 app.use(globalErrorHandler);

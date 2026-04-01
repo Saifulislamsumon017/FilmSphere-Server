@@ -6,10 +6,9 @@ import { seedAdmin } from './app/seedAdmin/seedAdmin.js';
 
 const startServer = async () => {
   try {
+    await seedAdmin();
     await prisma.$connect();
     console.log('✅ Database connected');
-
-    await seedAdmin();
 
     app.listen(envVars.PORT, () => {
       console.log(

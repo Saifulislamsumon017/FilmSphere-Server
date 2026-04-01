@@ -1,14 +1,17 @@
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import { authService } from './auth.service.js';
+
 import { catchAsync } from '../../shared/catchAsync.js';
 import { sendResponse } from '../../shared/sendResponse.js';
 import { tokenUtils } from '../../utils/token.js';
 import { CookieUtils } from '../../utils/cookie.js';
+import AppError from '../../errorHelpers/AppError.js';
+import { AuthService } from './auth.service.js';
+import { AuthValidation } from './auth.validation.js';
 
 // ---------------- Register ----------------
 const registerUser = catchAsync(async (req: Request, res: Response) => {
-  const result = await authService.authRegister(req.body);
+  const result = await AuthService.registerUser(req.body);
 
   // ✅ Set cookies
   tokenUtils.setAccessTokenCookie(res, result.accessToken);
@@ -28,7 +31,7 @@ const registerUser = catchAsync(async (req: Request, res: Response) => {
 
 // ---------------- Login ----------------
 const loginUser = catchAsync(async (req: Request, res: Response) => {
-  const result = await authService.authLogin(req.body);
+  const result = await AuthService.loginUser(req.body);
 
   // ✅ Set cookies
   tokenUtils.setAccessTokenCookie(res, result.accessToken);
@@ -48,7 +51,7 @@ const loginUser = catchAsync(async (req: Request, res: Response) => {
 
 // ---------------- Verify Email ----------------
 const verifyEmail = catchAsync(async (req: Request, res: Response) => {
-  const result = await authService.verifyEmail(req.body);
+  const result = await AuthService.verifyEmail(req.body);
 
   sendResponse(res, {
     httpStatusCode: StatusCodes.OK,
@@ -60,7 +63,7 @@ const verifyEmail = catchAsync(async (req: Request, res: Response) => {
 
 // ---------------- Get Me ----------------
 const getMe = catchAsync(async (req: Request, res: Response) => {
-  const result = await authService.authMe(req.user);
+  const result = await AuthService.getMe(req.user);
 
   sendResponse(res, {
     httpStatusCode: StatusCodes.OK,
@@ -70,11 +73,44 @@ const getMe = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+// ---------------- Refresh Token ----------------
+
+const getNewToken = catchAsync(async (req: Request, res: Response) => {
+  // ✅ Parse cookies using Zod
+  const parsed = AuthValidation.refreshTokenSchema.safeParse({
+    refreshToken: req.cookies.refreshToken,
+    sessionToken: req.cookies['better-auth.session_token'],
+  });
+
+  if (!parsed.success) {
+    throw new AppError(
+      StatusCodes.UNAUTHORIZED,
+      parsed.error.issues[0].message,
+    );
+  }
+
+  const result = await AuthService.getNewToken(parsed.data);
+
+  // ✅ Set cookies
+  tokenUtils.setAccessTokenCookie(res, result.accessToken);
+  tokenUtils.setRefreshTokenCookie(res, result.refreshToken);
+  tokenUtils.setBetterAuthSessionCookie(res, result.sessionToken);
+
+  // ✅ Send response
+  sendResponse(res, {
+    httpStatusCode: StatusCodes.OK,
+    success: true,
+    message: 'New tokens generated successfully',
+    data: result,
+  });
+});
+
 // ---------------- Logout ----------------
+
 const logoutUser = catchAsync(async (req: Request, res: Response) => {
   const sessionToken = req.cookies['better-auth.session_token'];
 
-  await authService.logOut(sessionToken);
+  await AuthService.logoutUser(sessionToken);
 
   // ✅ Clear all cookies
   CookieUtils.clearCookie(res, 'accessToken', {
@@ -102,7 +138,7 @@ const logoutUser = catchAsync(async (req: Request, res: Response) => {
 
 // ---------------- Forget Password ----------------
 const forgetPassword = catchAsync(async (req: Request, res: Response) => {
-  await authService.forgotPassword(req.body.email);
+  await AuthService.forgotPassword(req.body.email);
 
   sendResponse(res, {
     httpStatusCode: StatusCodes.OK,
@@ -113,7 +149,7 @@ const forgetPassword = catchAsync(async (req: Request, res: Response) => {
 
 // ---------------- Reset Password ----------------
 const resetPassword = catchAsync(async (req: Request, res: Response) => {
-  await authService.resetPassword(req.body);
+  await AuthService.resetPassword(req.body);
 
   sendResponse(res, {
     httpStatusCode: StatusCodes.OK,
@@ -128,6 +164,7 @@ export const AuthController = {
   loginUser,
   verifyEmail,
   getMe,
+  getNewToken,
   logoutUser,
   forgetPassword,
   resetPassword,

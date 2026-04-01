@@ -26,17 +26,7 @@ router.post(
   AuthController.verifyEmail,
 );
 
-router.post(
-  '/forget-password',
-  validateRequest(AuthValidation.forgetPasswordSchema),
-  AuthController.forgetPassword,
-);
-
-router.post(
-  '/reset-password',
-  validateRequest(AuthValidation.resetPasswordSchema),
-  AuthController.resetPassword,
-);
+router.post('/refresh-token', AuthController.getNewToken);
 
 // ✅ Protected
 router.get(
@@ -49,6 +39,18 @@ router.post(
   '/logout',
   checkAuth(UserRole.ADMIN, UserRole.USER),
   AuthController.logoutUser,
+);
+
+router.post(
+  '/forget-password',
+  validateRequest(AuthValidation.forgetPasswordSchema),
+  AuthController.forgetPassword,
+);
+
+router.post(
+  '/reset-password',
+  validateRequest(AuthValidation.resetPasswordSchema),
+  AuthController.resetPassword,
 );
 
 export const AuthRoutes = router;

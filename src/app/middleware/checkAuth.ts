@@ -19,7 +19,10 @@ export const checkAuth =
       );
 
       if (!sessionToken) {
-        throw new Error('Unauthorized access! No session token provided.');
+        throw new AppError(
+          status.UNAUTHORIZED,
+          'Unauthorized access! No session token provided.',
+        );
       }
 
       if (sessionToken) {

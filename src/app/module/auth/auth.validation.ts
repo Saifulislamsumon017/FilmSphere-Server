@@ -26,10 +26,17 @@ const resetPasswordSchema = z.object({
   newPassword: z.string().min(6, 'Password must be at least 6 characters'),
 });
 
+// ✅ Refresh Token Schema (for controller use)
+export const refreshTokenSchema = z.object({
+  refreshToken: z.string().min(1, 'Refresh token is required'),
+  sessionToken: z.string().min(1, 'Session token is required'),
+});
+
 export const AuthValidation = {
   registerUserSchema,
   loginUserSchema,
   verifyEmailSchema,
   forgetPasswordSchema,
   resetPasswordSchema,
+  refreshTokenSchema,
 };

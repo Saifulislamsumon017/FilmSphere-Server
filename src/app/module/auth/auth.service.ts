@@ -4,6 +4,7 @@ import {
   IRegisterUserPayload,
   IVerifyEmailPayload,
   IResetPasswordPayload,
+  IGetNewTokenPayload,
 } from './auth.interface.js';
 import { auth } from '../../lib/auth.js';
 import AppError from '../../errorHelpers/AppError.js';
@@ -11,9 +12,12 @@ import status from 'http-status';
 import { prisma } from '../../lib/prisma.js';
 import { tokenUtils } from '../../utils/token.js';
 import { UserStatus } from '../../../generated/prisma/enums.js';
+import { envVars } from '../../config/env.js';
+import { JwtPayload } from 'jsonwebtoken';
+import { jwtUtils } from '../../utils/jwt.js';
 
 // ✅ Register
-const authRegister = async (payload: IRegisterUserPayload) => {
+const registerUser = async (payload: IRegisterUserPayload) => {
   const data = await auth.api.signUpEmail({
     body: payload,
   });
@@ -29,7 +33,7 @@ const authRegister = async (payload: IRegisterUserPayload) => {
 };
 
 // ✅ Login
-const authLogin = async (payload: ILoginUserPayload) => {
+const loginUser = async (payload: ILoginUserPayload) => {
   const data = await auth.api.signInEmail({
     body: payload,
   });
@@ -58,7 +62,7 @@ const verifyEmail = async (payload: IVerifyEmailPayload) => {
 };
 
 // ✅ Get Me
-const authMe = async (user: any) => {
+const getMe = async (user: any) => {
   const userData = await prisma.user.findUnique({
     where: { id: user.userId },
   });
@@ -70,8 +74,79 @@ const authMe = async (user: any) => {
   return userData;
 };
 
+// ---------------- Refresh Token ----------------
+
+const getNewToken = async (payload: IGetNewTokenPayload) => {
+  const { refreshToken, sessionToken } = payload;
+
+  const isSessionTokenExists = await prisma.session.findUnique({
+    where: {
+      token: sessionToken,
+    },
+    include: {
+      user: true,
+    },
+  });
+
+  if (!isSessionTokenExists) {
+    throw new AppError(status.UNAUTHORIZED, 'Invalid session token');
+  }
+
+  const verifiedRefreshToken = jwtUtils.verifyToken(
+    refreshToken,
+    envVars.REFRESH_TOKEN_SECRET,
+  );
+
+  if (!verifiedRefreshToken.success && verifiedRefreshToken.error) {
+    throw new AppError(status.UNAUTHORIZED, 'Invalid refresh token');
+  }
+
+  const data = verifiedRefreshToken.data as JwtPayload;
+
+  // ✅ extra security (recommended)
+  if (data.userId !== isSessionTokenExists.userId) {
+    throw new AppError(status.UNAUTHORIZED, 'Token mismatch');
+  }
+
+  const newAccessToken = tokenUtils.getAccessToken({
+    userId: data.userId,
+    role: data.role,
+    name: data.name,
+    email: data.email,
+    status: data.status,
+    isDeleted: data.isDeleted,
+    emailVerified: data.emailVerified,
+  });
+
+  const newRefreshToken = tokenUtils.getRefreshToken({
+    userId: data.userId,
+    role: data.role,
+    name: data.name,
+    email: data.email,
+    status: data.status,
+    isDeleted: data.isDeleted,
+    emailVerified: data.emailVerified,
+  });
+
+  const { token } = await prisma.session.update({
+    where: {
+      token: sessionToken,
+    },
+    data: {
+      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      updatedAt: new Date(),
+    },
+  });
+
+  return {
+    accessToken: newAccessToken,
+    refreshToken: newRefreshToken,
+    sessionToken: token,
+  };
+};
+
 // ✅ Logout
-const logOut = async (sessionToken: string) => {
+const logoutUser = async (sessionToken: string) => {
   return await auth.api.signOut({
     headers: new Headers({
       Authorization: `Bearer ${sessionToken}`,
@@ -99,12 +174,13 @@ const resetPassword = async (payload: IResetPasswordPayload) => {
   });
 };
 
-export const authService = {
-  authRegister,
-  authLogin,
+export const AuthService = {
+  registerUser,
+  loginUser,
   verifyEmail,
-  authMe,
-  logOut,
+  getMe,
+  getNewToken,
+  logoutUser,
   forgotPassword,
   resetPassword,
 };
