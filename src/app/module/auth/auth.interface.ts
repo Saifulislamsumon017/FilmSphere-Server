@@ -34,3 +34,18 @@ export interface IRefreshTokenResponse {
   refreshToken: string;
   sessionToken: string;
 }
+
+// auth.interface.ts
+export interface IGoogleSession {
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    role?: string;
+  };
+}
+
+export interface IGoogleLoginResponse {
+  accessToken: string;
+  refreshToken: string;
+}

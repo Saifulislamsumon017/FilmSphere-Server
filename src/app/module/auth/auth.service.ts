@@ -5,13 +5,15 @@ import {
   IVerifyEmailPayload,
   IResetPasswordPayload,
   IGetNewTokenPayload,
+  IGoogleSession,
+  IGoogleLoginResponse,
 } from './auth.interface.js';
 import { auth } from '../../lib/auth.js';
 import AppError from '../../errorHelpers/AppError.js';
 import status from 'http-status';
 import { prisma } from '../../lib/prisma.js';
 import { tokenUtils } from '../../utils/token.js';
-import { UserStatus } from '../../../generated/prisma/enums.js';
+import { UserRole, UserStatus } from '../../../generated/prisma/enums.js';
 import { envVars } from '../../config/env.js';
 import { JwtPayload } from 'jsonwebtoken';
 import { jwtUtils } from '../../utils/jwt.js';
@@ -50,15 +52,31 @@ const loginUser = async (payload: ILoginUserPayload) => {
 
 // ✅ Verify Email
 const verifyEmail = async (payload: IVerifyEmailPayload) => {
-  const result = await auth.api.verifyEmailOTP({
-    body: payload,
+  const { email, otp } = payload;
+
+  // OTP check in Verification table
+  const token = await prisma.verification.findFirst({
+    where: {
+      identifier: email,
+      value: otp,
+      expiresAt: { gt: new Date() }, // still valid
+    },
   });
 
-  if (!result) {
+  if (!token) {
     throw new AppError(status.BAD_REQUEST, 'Invalid or expired OTP');
   }
 
-  return result;
+  // Mark user as verified
+  await prisma.user.update({
+    where: { email },
+    data: { emailVerified: true },
+  });
+
+  // Remove used OTP
+  await prisma.verification.delete({ where: { id: token.id } });
+
+  return { message: 'Email verified successfully' };
 };
 
 // ✅ Get Me
@@ -174,6 +192,42 @@ const resetPassword = async (payload: IResetPasswordPayload) => {
   });
 };
 
+// ---------------- Google Login Success ----------------
+const googleLoginSuccess = async (
+  session: IGoogleSession,
+): Promise<IGoogleLoginResponse> => {
+  const userId = session.user.id;
+
+  let user = await prisma.user.findUnique({ where: { id: userId } });
+
+  if (!user) {
+    user = await prisma.user.create({
+      data: {
+        id: userId,
+        name: session.user.name,
+        email: session.user.email,
+        role: UserRole.USER,
+        status: UserStatus.ACTIVE,
+      },
+    });
+  }
+
+  const payload = {
+    userId: user.id,
+    role: user.role,
+    name: user.name,
+    email: user.email,
+    status: user.status,
+    isDeleted: user.isDeleted,
+    emailVerified: user.emailVerified,
+  };
+
+  const accessToken = tokenUtils.getAccessToken(payload);
+  const refreshToken = tokenUtils.getRefreshToken(payload);
+
+  return { accessToken, refreshToken };
+};
+
 export const AuthService = {
   registerUser,
   loginUser,
@@ -181,6 +235,7 @@ export const AuthService = {
   getMe,
   getNewToken,
   logoutUser,
+  googleLoginSuccess,
   forgotPassword,
   resetPassword,
 };
