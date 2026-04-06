@@ -45,8 +45,8 @@ export const uploadFileToCloudinary = async (
       .upload_stream(
         {
           resource_type: 'auto',
-          public_id: `ph-healthcare/${folder}/${uniqueName}`,
-          folder: `ph-healthcare/${folder}`,
+          public_id: `FilmSphere/${folder}/${uniqueName}`,
+          folder: `FilmSphere/${folder}`,
         },
         (error, result) => {
           if (error) {

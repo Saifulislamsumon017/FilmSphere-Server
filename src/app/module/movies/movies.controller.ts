@@ -5,16 +5,38 @@ import { movieService } from './movies.service.js';
 import { sendResponse } from '../../shared/sendResponse.js';
 import { IQueryParams } from '../../interfaces/query.interface.js';
 
+const formatTags = (tags: string[]) =>
+  tags
+    .map(tag => {
+      const trimmed = tag.trim();
+      if (!trimmed) return '';
+      return trimmed.charAt(0).toUpperCase() + trimmed.slice(1).toLowerCase();
+    })
+    .filter(Boolean);
+
+/* ================= CREATE ================= */
+
 const createMovie = catchAsync(async (req: Request, res: Response) => {
-  const result = await movieService.createMovie(req.body, req.file);
+  const payload = {
+    ...req.body,
+    thumbnail: req.file?.path,
+    genre: formatTags(req.body.genre || []),
+    language: formatTags(req.body.language || []),
+    cast: formatTags(req.body.cast || []),
+    streamingPlatform: formatTags(req.body.streamingPlatform || []),
+  };
+
+  const result = await movieService.createMovie(payload);
 
   sendResponse(res, {
     httpStatusCode: status.CREATED,
     success: true,
-    message: 'Movie created',
+    message: 'Movie created successfully',
     data: result,
   });
 });
+
+/* ================= GET ALL ================= */
 
 const getAllMovies = catchAsync(async (req: Request, res: Response) => {
   const query = req.query;
@@ -23,11 +45,13 @@ const getAllMovies = catchAsync(async (req: Request, res: Response) => {
   sendResponse(res, {
     httpStatusCode: status.OK,
     success: true,
-    message: 'Movies fetched',
+    message: 'Movies fetched successfully',
     data: result.data,
     meta: result.meta,
   });
 });
+
+/* ================= GET BY ID ================= */
 
 const getMovieById = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
@@ -37,28 +61,38 @@ const getMovieById = catchAsync(async (req: Request, res: Response) => {
   sendResponse(res, {
     httpStatusCode: status.OK,
     success: true,
-    message: 'Movie fetched',
+    message: 'Movie fetched successfully',
     data: result,
   });
 });
 
+/* ================= UPDATE ================= */
+
 const updateMovie = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
-  const payload = req.body;
 
-  const result = await movieService.updateMovie(
-    id as string,
-    payload,
-    req.file,
-  );
+  const payload = {
+    ...req.body,
+    ...(req.file && { thumbnail: req.file.path }),
+    ...(req.body.genre && { genre: formatTags(req.body.genre) }),
+    ...(req.body.language && { language: formatTags(req.body.language) }),
+    ...(req.body.cast && { cast: formatTags(req.body.cast) }),
+    ...(req.body.streamingPlatform && {
+      streamingPlatform: formatTags(req.body.streamingPlatform),
+    }),
+  };
+
+  const result = await movieService.updateMovie(id as string, payload);
 
   sendResponse(res, {
     httpStatusCode: status.OK,
     success: true,
-    message: 'Movie updated',
+    message: 'Movie updated successfully',
     data: result,
   });
 });
+
+/* ================= DELETE ================= */
 
 const deleteMovie = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
@@ -67,10 +101,12 @@ const deleteMovie = catchAsync(async (req: Request, res: Response) => {
   sendResponse(res, {
     httpStatusCode: status.OK,
     success: true,
-    message: 'Movie deleted',
+    message: 'Movie deleted successfully',
     data: result,
   });
 });
+
+/* ================= EXTRA ================= */
 
 const getFeaturedMovies = catchAsync(async (req: Request, res: Response) => {
   const result = await movieService.getFeaturedMovies();
