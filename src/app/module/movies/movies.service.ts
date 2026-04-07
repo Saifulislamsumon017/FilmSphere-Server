@@ -12,6 +12,7 @@ import {
 } from './movies.constant.js';
 import AppError from '../../errorHelpers/AppError.js';
 import { deleteFileFromCloudinary } from '../../config/cloudinary.config.js';
+import { formatTags } from './movies.utils.js';
 
 /* ================= CREATE ================= */
 
@@ -48,6 +49,10 @@ const createMovie = async (payload: ICreateMovie) => {
   return prisma.movie.create({
     data: {
       ...payload,
+      genre: formatTags(payload.genre || []),
+      language: formatTags(payload.language || []),
+      cast: formatTags(payload.cast || []),
+      streamingPlatform: formatTags(payload.streamingPlatform || []),
       stripeBuyPriceId,
       stripeRentPriceId,
     },
@@ -106,22 +111,40 @@ const getMovieById = async (id: string) => {
 /* ================= UPDATE ================= */
 
 const updateMovie = async (id: string, payload: IUpdateMovie) => {
-  const exist = await prisma.movie.findUnique({ where: { id } });
+  const isExist = await prisma.movie.findUnique({ where: { id } });
 
-  if (!exist) throw new AppError(status.NOT_FOUND, 'Movie not found');
+  if (!isExist) throw new AppError(status.NOT_FOUND, 'Movie not found');
 
-  // only delete old image if new uploaded image
+  // delete old image if new uploaded image
   if (
     payload.thumbnail &&
-    exist.thumbnail &&
-    payload.thumbnail !== exist.thumbnail
+    isExist.thumbnail &&
+    payload.thumbnail !== isExist.thumbnail
   ) {
-    await deleteFileFromCloudinary(exist.thumbnail);
+    await deleteFileFromCloudinary(isExist.thumbnail);
   }
 
   return prisma.movie.update({
     where: { id },
-    data: payload,
+    data: {
+      ...payload,
+
+      ...(payload.genre && {
+        genre: formatTags(payload.genre),
+      }),
+
+      ...(payload.language && {
+        language: formatTags(payload.language),
+      }),
+
+      ...(payload.cast && {
+        cast: formatTags(payload.cast),
+      }),
+
+      ...(payload.streamingPlatform && {
+        streamingPlatform: formatTags(payload.streamingPlatform),
+      }),
+    },
   });
 };
 

@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { AuthRoutes } from '../module/auth/auth.route.js';
 import { MovieRoutes } from '../module/movies/movies.route.js';
 import { ReviewRoutes } from '../module/review/review.route.js';
+import { likeRoutes } from '../module/likes/likes.route.js';
 
 const router = Router();
 
@@ -17,13 +18,16 @@ router.use('/movies', MovieRoutes);
 
 router.use('/reviews', ReviewRoutes);
 
+// ---------------- Like Routes ----------------
+router.use('/likes', likeRoutes);
+
+// ---------------- Like Routes ----------------
+// router.use('/comments', CommentRoutes);
+
 export const IndexRoutes = router;
 
 /* router.use("/admin", AdminRoutes);
 
-router.use("/comments", CommentRoutes);
-
-router.use("/likes", LikeRoutes);
 
 router.use("/watchList", WatchListRoutes);
 

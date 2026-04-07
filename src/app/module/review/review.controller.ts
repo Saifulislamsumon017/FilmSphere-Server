@@ -24,8 +24,9 @@ const createReview = catchAsync(async (req: Request, res: Response) => {
 
 /* ================= GET ALL ================= */
 
-const getAllReviews = catchAsync(async (req, res) => {
-  const result = await reviewService.getAllReviews(req.query as IQueryParams);
+const getAllReviews = catchAsync(async (req: Request, res: Response) => {
+  const query = req.query;
+  const result = await reviewService.getAllReviews(query as IQueryParams);
 
   sendResponse(res, {
     httpStatusCode: status.OK,
@@ -38,7 +39,7 @@ const getAllReviews = catchAsync(async (req, res) => {
 
 /* ================= GET BY ID ================= */
 
-const getReviewById = catchAsync(async (req, res) => {
+const getReviewById = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
   const result = await reviewService.getReviewById(id as string);
 
@@ -52,7 +53,7 @@ const getReviewById = catchAsync(async (req, res) => {
 
 /* ================= GET BY MOVIE ================= */
 
-const getReviewsByMovieId = catchAsync(async (req, res) => {
+const getReviewsByMovieId = catchAsync(async (req: Request, res: Response) => {
   const { movieId } = req.params;
   const result = await reviewService.getReviewsByMovieId(
     movieId as string,
@@ -70,7 +71,7 @@ const getReviewsByMovieId = catchAsync(async (req, res) => {
 
 /* ================= UPDATE ================= */
 
-const updateReview = catchAsync(async (req, res) => {
+const updateReview = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
   const user = req.user;
   const payload = req.body;
@@ -86,7 +87,7 @@ const updateReview = catchAsync(async (req, res) => {
 
 /* ================= DELETE ================= */
 
-const deleteReview = catchAsync(async (req, res) => {
+const deleteReview = catchAsync(async (req: Request, res: Response) => {
   const user = req.user;
   const { id } = req.params;
 
@@ -102,7 +103,7 @@ const deleteReview = catchAsync(async (req, res) => {
 
 /* ================= ADMIN ================= */
 
-const getPendingReviews = catchAsync(async (req, res) => {
+const getPendingReviews = catchAsync(async (req: Request, res: Response) => {
   const result = await reviewService.getPendingReviews(
     req.query as IQueryParams,
   );
@@ -116,7 +117,7 @@ const getPendingReviews = catchAsync(async (req, res) => {
   });
 });
 
-const approveReview = catchAsync(async (req, res) => {
+const approveReview = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
   const result = await reviewService.approveReview(id as string);
 
@@ -128,7 +129,7 @@ const approveReview = catchAsync(async (req, res) => {
   });
 });
 
-const rejectReview = catchAsync(async (req, res) => {
+const rejectReview = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
   const result = await reviewService.rejectReview(
     id as string,
@@ -145,18 +146,20 @@ const rejectReview = catchAsync(async (req, res) => {
 
 /* ================= EXTRA ================= */
 
-const getRecentApprovedReviews = catchAsync(async (req, res) => {
-  const result = await reviewService.getRecentApprovedReviews();
+const getRecentApprovedReviews = catchAsync(
+  async (req: Request, res: Response) => {
+    const result = await reviewService.getRecentApprovedReviews();
 
-  sendResponse(res, {
-    httpStatusCode: status.OK,
-    success: true,
-    message: 'Recent reviews fetched successfully',
-    data: result,
-  });
-});
+    sendResponse(res, {
+      httpStatusCode: status.OK,
+      success: true,
+      message: 'Recent reviews fetched successfully',
+      data: result,
+    });
+  },
+);
 
-const syncRatings = catchAsync(async (req, res) => {
+const syncRatings = catchAsync(async (req: Request, res: Response) => {
   const result = await reviewService.syncRatings();
 
   sendResponse(res, {

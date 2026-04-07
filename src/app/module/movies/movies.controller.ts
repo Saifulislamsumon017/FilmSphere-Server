@@ -5,25 +5,10 @@ import { movieService } from './movies.service.js';
 import { sendResponse } from '../../shared/sendResponse.js';
 import { IQueryParams } from '../../interfaces/query.interface.js';
 
-const formatTags = (tags: string[]) =>
-  tags
-    .map(tag => {
-      const trimmed = tag.trim();
-      if (!trimmed) return '';
-      return trimmed.charAt(0).toUpperCase() + trimmed.slice(1).toLowerCase();
-    })
-    .filter(Boolean);
-
-/* ================= CREATE ================= */
-
 const createMovie = catchAsync(async (req: Request, res: Response) => {
   const payload = {
     ...req.body,
     thumbnail: req.file?.path,
-    genre: formatTags(req.body.genre || []),
-    language: formatTags(req.body.language || []),
-    cast: formatTags(req.body.cast || []),
-    streamingPlatform: formatTags(req.body.streamingPlatform || []),
   };
 
   const result = await movieService.createMovie(payload);
@@ -74,12 +59,6 @@ const updateMovie = catchAsync(async (req: Request, res: Response) => {
   const payload = {
     ...req.body,
     ...(req.file && { thumbnail: req.file.path }),
-    ...(req.body.genre && { genre: formatTags(req.body.genre) }),
-    ...(req.body.language && { language: formatTags(req.body.language) }),
-    ...(req.body.cast && { cast: formatTags(req.body.cast) }),
-    ...(req.body.streamingPlatform && {
-      streamingPlatform: formatTags(req.body.streamingPlatform),
-    }),
   };
 
   const result = await movieService.updateMovie(id as string, payload);
@@ -91,7 +70,6 @@ const updateMovie = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
-
 /* ================= DELETE ================= */
 
 const deleteMovie = catchAsync(async (req: Request, res: Response) => {
