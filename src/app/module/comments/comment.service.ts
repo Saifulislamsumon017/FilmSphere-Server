@@ -12,7 +12,6 @@ import { IQueryParams } from '../../interfaces/query.interface.js';
 import { Prisma, Comment } from '../../../generated/prisma/client.js';
 
 /* ================= CREATE ================= */
-
 const createComment = async (
   user: IRequestUser,
   payload: ICreateCommentPayload,
@@ -24,7 +23,7 @@ const createComment = async (
       reviewId: payload.reviewId,
       userId,
       content: payload.content,
-      parentCommentId: payload.parentCommentId,
+      parentCommentId: payload.parentCommentId || null,
     },
   });
 
@@ -37,10 +36,8 @@ const createComment = async (
 };
 
 /* ================= GET BY REVIEW ================= */
-
-const getCommentsByReview = async (payload: ICreateCommentPayload) => {
-  const { reviewId } = payload;
-  const comments = await prisma.comment.findMany({
+const getCommentsByReview = async (reviewId: string) => {
+  return prisma.comment.findMany({
     where: {
       reviewId,
       parentCommentId: null,
@@ -56,12 +53,9 @@ const getCommentsByReview = async (payload: ICreateCommentPayload) => {
     },
     orderBy: { createdAt: 'desc' },
   });
-
-  return comments;
 };
 
 /* ================= GET ALL ================= */
-
 const getAllComments = async (query: IQueryParams) => {
   const queryBuilder = new QueryBuilder<
     Comment,
@@ -72,7 +66,7 @@ const getAllComments = async (query: IQueryParams) => {
     filterableFields: ['reviewId', 'userId'],
   });
 
-  const result = await queryBuilder
+  return queryBuilder
     .filter()
     .include({
       user: { select: { name: true } },
@@ -81,12 +75,9 @@ const getAllComments = async (query: IQueryParams) => {
     .paginate()
     .sort()
     .execute();
-
-  return result;
 };
 
 /* ================= GET SINGLE ================= */
-
 const getCommentById = async (commentId: string) => {
   const comment = await prisma.comment.findUnique({
     where: { id: commentId },
@@ -104,7 +95,6 @@ const getCommentById = async (commentId: string) => {
 };
 
 /* ================= UPDATE ================= */
-
 const updateComment = async (
   user: IRequestUser,
   commentId: string,
@@ -131,7 +121,6 @@ const updateComment = async (
 };
 
 /* ================= DELETE ================= */
-
 const deleteComment = async (user: IRequestUser, commentId: string) => {
   const { userId } = user;
 
@@ -162,8 +151,7 @@ const deleteComment = async (user: IRequestUser, commentId: string) => {
     data: { commentCount: { decrement: 1 + replyCount } },
   });
 
-  return { success: true };
-  // return null;
+  return null;
 };
 
 export const commentService = {

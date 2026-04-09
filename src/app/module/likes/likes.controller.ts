@@ -9,9 +9,9 @@ import { IQueryParams } from '../../interfaces/query.interface.js';
 
 const likeReview = catchAsync(async (req: Request, res: Response) => {
   const user = req.user;
-  const payload = req.body;
+  const reviewId = req.params.reviewId;
 
-  const result = await likeService.likeReview(user, payload);
+  const result = await likeService.likeReview(user, reviewId as string);
 
   sendResponse(res, {
     httpStatusCode: status.CREATED,
@@ -25,9 +25,9 @@ const likeReview = catchAsync(async (req: Request, res: Response) => {
 
 const unlikeReview = catchAsync(async (req: Request, res: Response) => {
   const user = req.user;
-  const payload = req.body;
+  const reviewId = req.params.reviewId;
 
-  const result = await likeService.unlikeReview(user, payload);
+  const result = await likeService.unlikeReview(user, reviewId as string);
 
   sendResponse(res, {
     httpStatusCode: status.OK,
@@ -41,9 +41,9 @@ const unlikeReview = catchAsync(async (req: Request, res: Response) => {
 
 const isLiked = catchAsync(async (req: Request, res: Response) => {
   const user = req.user;
-  const payload = req.body;
+  const reviewId = req.params.reviewId;
 
-  const result = await likeService.isLiked(user, payload);
+  const result = await likeService.isLiked(user, reviewId as string);
 
   sendResponse(res, {
     httpStatusCode: status.OK,
@@ -57,6 +57,7 @@ const isLiked = catchAsync(async (req: Request, res: Response) => {
 
 const getAllLikes = catchAsync(async (req: Request, res: Response) => {
   const query = req.query;
+
   const result = await likeService.getAllLikes(query as IQueryParams);
 
   sendResponse(res, {
@@ -68,10 +69,13 @@ const getAllLikes = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+/* ================= TOGGLE ================= */
+
 const toggleLike = catchAsync(async (req: Request, res: Response) => {
   const user = req.user;
-  const payload = req.body;
-  const result = await likeService.toggleLike(user, payload);
+  const reviewId = req.params.reviewId;
+
+  const result = await likeService.toggleLike(user, reviewId as string);
 
   sendResponse(res, {
     httpStatusCode: status.OK,

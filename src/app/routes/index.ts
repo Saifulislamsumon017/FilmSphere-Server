@@ -5,6 +5,7 @@ import { ReviewRoutes } from '../module/review/review.route.js';
 import { likeRoutes } from '../module/likes/likes.route.js';
 import { commentRoutes } from '../module/comments/comment.route.js';
 import { watchlistRoutes } from '../module/watchlist/watchlist.route.js';
+import { PurchaseRoutes } from '../module/purchase/purchase.route.js';
 
 const router = Router();
 
@@ -24,13 +25,17 @@ router.use('/reviews', ReviewRoutes);
 
 router.use('/likes', likeRoutes);
 
-// ---------------- Like Routes ----------------
+// ---------------- Comments Routes ----------------
 
 router.use('/comments', commentRoutes);
 
-// ---------------- Like Routes ----------------
+// ---------------- Watchlisht Routes ----------------
 
 router.use('/watchList', watchlistRoutes);
+
+// ----------------  Purchase Routes ----------------
+
+router.use('/purchase', PurchaseRoutes);
 
 export const IndexRoutes = router;
 
@@ -38,7 +43,6 @@ export const IndexRoutes = router;
 
 router.use("/subscription", SubscriptionRoutes);
 
-router.use("/purchase", PurchaseRoutes);
 
 router.use("/admin-analytics", AdminAnalyticsRoutes);
 

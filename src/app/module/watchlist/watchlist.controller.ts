@@ -43,9 +43,13 @@ const removeFromWatchlist = catchAsync(async (req: Request, res: Response) => {
 /* ================= GET ================= */
 
 const getWatchlist = catchAsync(async (req: Request, res: Response) => {
-  const { query } = req.query;
+  const user = req.user;
+  const query = req.query;
 
-  const result = await watchlistService.getWatchlist(query as IQueryParams);
+  const result = await watchlistService.getWatchlist(
+    user,
+    query as IQueryParams,
+  );
 
   sendResponse(res, {
     httpStatusCode: status.OK,

@@ -21,26 +21,3 @@ model Like {
   @@map("likes")
 }
 
-
-// model Like {
-//   id        String   @id @default(uuid())
-
-//   userId    String
-//   reviewId  String
-
-//   createdAt DateTime @default(now())
-
-//   // 🔗 Relations
-//   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-//   review    Review   @relation(fields: [reviewId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-
-//   // 🚀 Unique constraint (1 user = 1 like per review)
-//   @@unique([userId, reviewId], name: "uniq_user_review_like")
-
-//   // 🚀 Indexing (Doctor-style)
-//   @@index([reviewId], name: "idx_like_review")
-//   @@index([userId], name: "idx_like_user")
-
-//   // 📦 Table name
-//   @@map("likes")
-// }

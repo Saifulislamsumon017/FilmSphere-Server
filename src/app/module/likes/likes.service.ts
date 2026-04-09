@@ -10,15 +10,13 @@ import {
 
 import { Prisma, Like } from '../../../generated/prisma/client.js';
 
-import { ICreateLikePayload } from './likes.interface.js';
 import { IRequestUser } from '../../interfaces/requestUser.interface.js';
 import { IQueryParams } from '../../interfaces/query.interface.js';
 
 /* ================= LIKE ================= */
 
-const likeReview = async (user: IRequestUser, payload: ICreateLikePayload) => {
+const likeReview = async (user: IRequestUser, reviewId: string) => {
   const { userId } = user;
-  const { reviewId } = payload;
 
   const existing = await prisma.like.findUnique({
     where: {
@@ -48,12 +46,8 @@ const likeReview = async (user: IRequestUser, payload: ICreateLikePayload) => {
 
 /* ================= UNLIKE ================= */
 
-const unlikeReview = async (
-  user: IRequestUser,
-  payload: ICreateLikePayload,
-) => {
+const unlikeReview = async (user: IRequestUser, reviewId: string) => {
   const { userId } = user;
-  const { reviewId } = payload;
 
   const existing = await prisma.like.findUnique({
     where: {
@@ -85,12 +79,10 @@ const unlikeReview = async (
 
   return review;
 };
-
 /* ================= CHECK ================= */
 
-const isLiked = async (user: IRequestUser, payload: ICreateLikePayload) => {
+const isLiked = async (user: IRequestUser, reviewId: string) => {
   const { userId } = user;
-  const { reviewId } = payload;
 
   const like = await prisma.like.findUnique({
     where: {
@@ -131,22 +123,55 @@ const getAllLikes = async (query: IQueryParams) => {
 
 /* ================= Toggle Like ================= */
 
-const toggleLike = async (user: IRequestUser, payload: ICreateLikePayload) => {
+// const toggleLike = async (user: IRequestUser, reviewId: string) => {
+//   const { userId } = user;
+
+//   const existing = await prisma.like.findUnique({
+//     where: {
+//       uniq_user_review_like: {
+//         userId,
+//         reviewId,
+//       },
+//     },
+//   });
+
+//   if (existing) {
+//     await prisma.like.delete({
+//       where: {
+//         uniq_user_review_like: {
+//           userId,
+//           reviewId,
+//         },
+//       },
+//     });
+
+//     const review = await prisma.review.update({
+//       where: { id: reviewId },
+//       data: { likesCount: { decrement: 1 } },
+//       select: { likesCount: true },
+//     });
+
+//     return { liked: false, ...review };
+//   }
+
+//   await prisma.like.create({
+//     data: { userId, reviewId },
+//   });
+
+//   const review = await prisma.review.update({
+//     where: { id: reviewId },
+//     data: { likesCount: { increment: 1 } },
+//     select: { likesCount: true },
+//   });
+
+//   return { liked: true, ...review };
+// };
+
+const toggleLike = async (user: IRequestUser, reviewId: string) => {
   const { userId } = user;
-  const { reviewId } = payload;
 
-  const existing = await prisma.like.findUnique({
-    where: {
-      uniq_user_review_like: {
-        userId,
-        reviewId,
-      },
-    },
-  });
-
-  if (existing) {
-    // UNLIKE
-    await prisma.like.delete({
+  const result = await prisma.$transaction(async tx => {
+    const existing = await tx.like.findUnique({
       where: {
         uniq_user_review_like: {
           userId,
@@ -155,27 +180,50 @@ const toggleLike = async (user: IRequestUser, payload: ICreateLikePayload) => {
       },
     });
 
-    const review = await prisma.review.update({
-      where: { id: reviewId },
-      data: { likesCount: { decrement: 1 } },
-      select: { likesCount: true },
-    });
+    if (existing) {
+      // UNLIKE
+      await tx.like.delete({
+        where: {
+          uniq_user_review_like: {
+            userId,
+            reviewId,
+          },
+        },
+      });
 
-    return { liked: false, ...review };
-  } else {
+      const review = await tx.review.update({
+        where: { id: reviewId },
+        data: { likesCount: { decrement: 1 } },
+        select: { likesCount: true },
+      });
+
+      return {
+        liked: false,
+        likesCount: review.likesCount,
+      };
+    }
+
     // LIKE
-    await prisma.like.create({
-      data: { userId, reviewId },
+    await tx.like.create({
+      data: {
+        userId,
+        reviewId,
+      },
     });
 
-    const review = await prisma.review.update({
+    const review = await tx.review.update({
       where: { id: reviewId },
       data: { likesCount: { increment: 1 } },
       select: { likesCount: true },
     });
 
-    return { liked: true, ...review };
-  }
+    return {
+      liked: true,
+      likesCount: review.likesCount,
+    };
+  });
+
+  return result;
 };
 
 export const likeService = {

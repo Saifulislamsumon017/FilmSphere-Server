@@ -23,8 +23,9 @@ const createComment = catchAsync(async (req: Request, res: Response) => {
 /* ================= GET BY REVIEW ================= */
 
 const getCommentsByReview = catchAsync(async (req: Request, res: Response) => {
-  const payload = req.body;
-  const result = await commentService.getCommentsByReview(payload);
+  const { reviewId } = req.params;
+
+  const result = await commentService.getCommentsByReview(reviewId as string);
 
   sendResponse(res, {
     httpStatusCode: status.OK,
@@ -51,9 +52,10 @@ const getAllComments = catchAsync(async (req: Request, res: Response) => {
 
 /* ================= GET SINGLE ================= */
 
-const getCommentById = catchAsync(async (req: Request, res: Response) => {
-  const { commentId } = req.params;
-  const result = await commentService.getCommentById(commentId as string);
+const getCommentById = catchAsync(async (req, res) => {
+  const { id } = req.params;
+
+  const result = await commentService.getCommentById(id as string);
 
   sendResponse(res, {
     httpStatusCode: status.OK,
@@ -62,16 +64,15 @@ const getCommentById = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
-
 /* ================= UPDATE ================= */
 
 const updateComment = catchAsync(async (req: Request, res: Response) => {
-  const { commentId } = req.params;
+  const { id } = req.params;
   const user = req.user;
   const payload = req.body;
   const result = await commentService.updateComment(
     user,
-    commentId as string,
+    id as string,
     payload,
   );
 
@@ -86,9 +87,9 @@ const updateComment = catchAsync(async (req: Request, res: Response) => {
 /* ================= DELETE ================= */
 
 const deleteComment = catchAsync(async (req: Request, res: Response) => {
-  const { commentId } = req.params;
+  const { id } = req.params;
   const user = req.user;
-  await commentService.deleteComment(user, commentId as string);
+  await commentService.deleteComment(user, id as string);
 
   sendResponse(res, {
     httpStatusCode: status.OK,

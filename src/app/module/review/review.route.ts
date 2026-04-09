@@ -28,6 +28,7 @@ router.post(
 router.put(
   '/:id',
   checkAuth(UserRole.USER),
+  // checkAuth(UserRole.USER, UserRole.ADMIN),
   validateRequest(updateReviewValidationSchema),
   reviewController.updateReview,
 );

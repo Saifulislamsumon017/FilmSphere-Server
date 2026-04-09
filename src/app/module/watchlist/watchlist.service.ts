@@ -63,18 +63,30 @@ const removeFromWatchlist = async (user: IRequestUser, movieId: string) => {
 
 /* ================= GET ALL (🔥 QueryBuilder) ================= */
 
-const getWatchlist = async (query: IQueryParams) => {
+const getWatchlist = async (user: IRequestUser, query: IQueryParams) => {
+  const { userId } = user;
+
+  // 🔥 override sortBy for watchlist only
+  const updatedQuery = {
+    ...query,
+    sortBy: query.sortBy || 'addedAt', // 👈 IMPORTANT FIX
+  };
+
   const queryBuilder = new QueryBuilder<
     Watchlist,
     Prisma.WatchlistWhereInput,
     Prisma.WatchlistInclude
-  >(prisma.watchlist, query, {
+  >(prisma.watchlist, updatedQuery, {
     searchableFields: watchlistSearchableFields,
     filterableFields: watchlistFilterableFields,
   });
 
   const result = await queryBuilder
+    .search()
     .filter()
+    .where({
+      userId,
+    })
     .include({
       movie: {
         select: {
@@ -91,6 +103,7 @@ const getWatchlist = async (query: IQueryParams) => {
     })
     .paginate()
     .sort()
+    .fields()
     .execute();
 
   return result;
