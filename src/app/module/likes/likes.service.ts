@@ -123,50 +123,6 @@ const getAllLikes = async (query: IQueryParams) => {
 
 /* ================= Toggle Like ================= */
 
-// const toggleLike = async (user: IRequestUser, reviewId: string) => {
-//   const { userId } = user;
-
-//   const existing = await prisma.like.findUnique({
-//     where: {
-//       uniq_user_review_like: {
-//         userId,
-//         reviewId,
-//       },
-//     },
-//   });
-
-//   if (existing) {
-//     await prisma.like.delete({
-//       where: {
-//         uniq_user_review_like: {
-//           userId,
-//           reviewId,
-//         },
-//       },
-//     });
-
-//     const review = await prisma.review.update({
-//       where: { id: reviewId },
-//       data: { likesCount: { decrement: 1 } },
-//       select: { likesCount: true },
-//     });
-
-//     return { liked: false, ...review };
-//   }
-
-//   await prisma.like.create({
-//     data: { userId, reviewId },
-//   });
-
-//   const review = await prisma.review.update({
-//     where: { id: reviewId },
-//     data: { likesCount: { increment: 1 } },
-//     select: { likesCount: true },
-//   });
-
-//   return { liked: true, ...review };
-// };
-
 const toggleLike = async (user: IRequestUser, reviewId: string) => {
   const { userId } = user;
 

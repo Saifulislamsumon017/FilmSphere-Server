@@ -148,14 +148,15 @@ const confirmPurchase = async (
 
 /* ================= GET ALL ================= */
 const getAllPurchases = async (query: IQueryParams) => {
-  return new QueryBuilder<
+  const queryBuilder = new QueryBuilder<
     Purchase,
     Prisma.PurchaseWhereInput,
     Prisma.PurchaseInclude
   >(prisma.purchase, query, {
     searchableFields: purchaseSearchableFields,
     filterableFields: purchaseFilterableFields,
-  })
+  });
+  const result = await queryBuilder
     .search()
     .filter()
     .include({
@@ -165,6 +166,8 @@ const getAllPurchases = async (query: IQueryParams) => {
     .paginate()
     .sort()
     .execute();
+
+  return result;
 };
 
 /* ================= HISTORY ================= */

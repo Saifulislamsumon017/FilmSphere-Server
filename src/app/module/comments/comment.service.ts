@@ -66,7 +66,7 @@ const getAllComments = async (query: IQueryParams) => {
     filterableFields: ['reviewId', 'userId'],
   });
 
-  return queryBuilder
+  const result = await queryBuilder
     .filter()
     .include({
       user: { select: { name: true } },
@@ -75,6 +75,7 @@ const getAllComments = async (query: IQueryParams) => {
     .paginate()
     .sort()
     .execute();
+  return result;
 };
 
 /* ================= GET SINGLE ================= */
