@@ -6,6 +6,7 @@ import { likeRoutes } from '../module/likes/likes.route.js';
 import { commentRoutes } from '../module/comments/comment.route.js';
 import { watchlistRoutes } from '../module/watchlist/watchlist.route.js';
 import { PurchaseRoutes } from '../module/purchase/purchase.route.js';
+import { subscriptionRoutes } from '../module/subscription/subscription.route.js';
 
 const router = Router();
 
@@ -37,12 +38,13 @@ router.use('/watchList', watchlistRoutes);
 
 router.use('/purchase', PurchaseRoutes);
 
+// ----------------  Subscription Routes ----------------
+
+router.use('/subscription', subscriptionRoutes);
+
 export const IndexRoutes = router;
 
 /* router.use("/admin", AdminRoutes);
-
-router.use("/subscription", SubscriptionRoutes);
-
 
 router.use("/admin-analytics", AdminAnalyticsRoutes);
 
