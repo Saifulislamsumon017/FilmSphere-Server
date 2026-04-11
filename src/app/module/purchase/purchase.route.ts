@@ -29,7 +29,7 @@ router.get(
 router.post(
   '/cancel/:id',
   checkAuth(UserRole.USER),
-  purchaseController.cancelRental,
+  purchaseController.cancelPurchases,
 );
 
 router.get(

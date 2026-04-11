@@ -15,18 +15,29 @@ interface EnvConfig {
   REFRESH_TOKEN_EXPIRES_IN: string;
   ADMIN_EMAIL: string;
   ADMIN_PASSWORD: string;
+
   CLOUDINARY: {
     CLOUDINARY_CLOUD_NAME: string;
     CLOUDINARY_API_KEY: string;
     CLOUDINARY_API_SECRET: string;
   };
-  STRIPE_SECRET_KEY: string;
-  STRIPE_MONTHLY_PRICE_ID: string;
-  STRIPE_YEARLY_PRICE_ID: string;
+
+  STRIPE: {
+    STRIPE_SECRET_KEY: string;
+    STRIPE_WEBHOOK_SECRET: string;
+    STRIPE_MONTHLY_PRICE_ID: string;
+    STRIPE_YEARLY_PRICE_ID: string;
+  };
+
+  // STRIPE_SECRET_KEY: string;
+  // STRIPE_WEBHOOK_SECRET: string;
+
   GOOGLE_CLIENT_ID: string;
   GOOGLE_CLIENT_SECRET: string;
   GOOGLE_CALLBACK_URL: string;
+
   BACKEND_URL: string;
+
   EMAIL_SENDER: {
     SMTP_USER: string;
     SMTP_PASS: string;
@@ -54,6 +65,7 @@ const loadEnvVariables = (): EnvConfig => {
     'CLOUDINARY_API_KEY',
     'CLOUDINARY_API_SECRET',
     'STRIPE_SECRET_KEY',
+    'STRIPE_WEBHOOK_SECRET', // ✅ NEW
     'STRIPE_MONTHLY_PRICE_ID',
     'STRIPE_YEARLY_PRICE_ID',
     'GOOGLE_CLIENT_ID',
@@ -72,12 +84,9 @@ const loadEnvVariables = (): EnvConfig => {
       throw new Error(
         `Environment variable ${variable} is required but not set in .env file.`,
       );
-      // throw new AppError(
-      //   status.INTERNAL_SERVER_ERROR,
-      //   `Environment variable ${variable} is required but not set in .env file.`,
-      // );
     }
   });
+
   return {
     NODE_ENV: process.env.NODE_ENV as string,
     PORT: process.env.PORT as string,
@@ -91,18 +100,29 @@ const loadEnvVariables = (): EnvConfig => {
     REFRESH_TOKEN_EXPIRES_IN: process.env.REFRESH_TOKEN_EXPIRES_IN as string,
     ADMIN_EMAIL: process.env.ADMIN_EMAIL as string,
     ADMIN_PASSWORD: process.env.ADMIN_PASSWORD as string,
+
     CLOUDINARY: {
       CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME as string,
       CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY as string,
       CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET as string,
     },
-    STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY as string,
-    STRIPE_MONTHLY_PRICE_ID: process.env.STRIPE_MONTHLY_PRICE_ID as string,
-    STRIPE_YEARLY_PRICE_ID: process.env.STRIPE_YEARLY_PRICE_ID as string,
+
+    STRIPE: {
+      STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY as string,
+      STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET as string,
+      STRIPE_MONTHLY_PRICE_ID: process.env.STRIPE_MONTHLY_PRICE_ID as string,
+      STRIPE_YEARLY_PRICE_ID: process.env.STRIPE_YEARLY_PRICE_ID as string,
+    },
+
+    // STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY as string,
+    // STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET as string,
+
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID as string,
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET as string,
     GOOGLE_CALLBACK_URL: process.env.GOOGLE_CALLBACK_URL as string,
+
     BACKEND_URL: process.env.BACKEND_URL as string,
+
     EMAIL_SENDER: {
       SMTP_USER: process.env.EMAIL_SENDER_SMTP_USER as string,
       SMTP_PASS: process.env.EMAIL_SENDER_SMTP_PASS as string,

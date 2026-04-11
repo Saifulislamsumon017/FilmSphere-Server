@@ -70,10 +70,10 @@ const checkPurchase = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const cancelRental = catchAsync(async (req: Request, res: Response) => {
+const cancelPurchases = catchAsync(async (req: Request, res: Response) => {
   const user = req.user;
   const { id } = req.params;
-  const result = await purchaseService.cancelRental(user, id as string);
+  const result = await purchaseService.cancelPurchases(user, id as string);
   sendResponse(res, {
     httpStatusCode: status.OK,
     success: true,
@@ -88,5 +88,5 @@ export const purchaseController = {
   getAllPurchases,
   getPurchaseHistory,
   checkPurchase,
-  cancelRental,
+  cancelPurchases,
 };

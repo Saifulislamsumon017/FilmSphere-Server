@@ -7,45 +7,32 @@ import { commentRoutes } from '../module/comments/comment.route.js';
 import { watchlistRoutes } from '../module/watchlist/watchlist.route.js';
 import { PurchaseRoutes } from '../module/purchase/purchase.route.js';
 import { subscriptionRoutes } from '../module/subscription/subscription.route.js';
+import { paymentRoutes } from '../module/payment/payment.route.js';
+import { webhookSubscriptionRoutes } from '../module/webhookSubscription/webhooksubscription.route.js';
+import { userRoutes } from '../module/user/user.route.js';
+import { AdminRoutes } from '../module/admin/admin.route.js';
+import { StatsRoutes } from '../module/stats/stats.route.js';
 
 const router = Router();
-
-// ---------------- Authentication Routes ----------------
-
 router.use('/auth', AuthRoutes);
-
-// ---------------- Movies Routes ----------------
-
+router.use('/user', userRoutes);
+router.use('/admin', AdminRoutes);
+router.use('/stats', StatsRoutes);
 router.use('/movies', MovieRoutes);
-
-// ---------------- Reviews Routes ----------------
-
 router.use('/reviews', ReviewRoutes);
-
-// ---------------- Like Routes ----------------
-
 router.use('/likes', likeRoutes);
-
-// ---------------- Comments Routes ----------------
-
 router.use('/comments', commentRoutes);
-
-// ---------------- Watchlisht Routes ----------------
-
 router.use('/watchList', watchlistRoutes);
 
-// ----------------  Purchase Routes ----------------
-
 router.use('/purchase', PurchaseRoutes);
-
-// ----------------  Subscription Routes ----------------
+router.use('/payments', paymentRoutes);
 
 router.use('/subscription', subscriptionRoutes);
+router.use('/webhook-subscription', webhookSubscriptionRoutes);
 
 export const IndexRoutes = router;
 
-/* router.use("/admin", AdminRoutes);
-
+/*
 router.use("/admin-analytics", AdminAnalyticsRoutes);
 
-router.use("/user", UserRoutes); */
+ */

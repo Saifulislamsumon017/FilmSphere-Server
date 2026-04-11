@@ -228,6 +228,7 @@ export const PurchaseScalarFieldEnum = {
   paymentStatus: 'paymentStatus',
   amount: 'amount',
   stripeTransactionId: 'stripeTransactionId',
+  invoiceUrl: 'invoiceUrl',
   expiresAt: 'expiresAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -266,6 +267,7 @@ export const SubscriptionScalarFieldEnum = {
   paymentStatus: 'paymentStatus',
   stripeId: 'stripeId',
   stripePriceId: 'stripePriceId',
+  invoiceUrl: 'invoiceUrl',
   startDate: 'startDate',
   endDate: 'endDate',
   createdAt: 'createdAt',

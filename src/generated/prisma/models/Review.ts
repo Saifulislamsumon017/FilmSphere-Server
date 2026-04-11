@@ -294,7 +294,7 @@ export type ReviewWhereInput = {
   NOT?: Prisma.ReviewWhereInput | Prisma.ReviewWhereInput[]
   id?: Prisma.StringFilter<"Review"> | string
   title?: Prisma.StringFilter<"Review"> | string
-  rating?: Prisma.IntFilter<"Review"> | number
+  rating?: Prisma.FloatFilter<"Review"> | number
   content?: Prisma.StringFilter<"Review"> | string
   status?: Prisma.EnumReviewStatusFilter<"Review"> | $Enums.ReviewStatus
   rejectionReason?: Prisma.StringNullableFilter<"Review"> | string | null
@@ -344,7 +344,7 @@ export type ReviewWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.ReviewWhereInput[]
   NOT?: Prisma.ReviewWhereInput | Prisma.ReviewWhereInput[]
   title?: Prisma.StringFilter<"Review"> | string
-  rating?: Prisma.IntFilter<"Review"> | number
+  rating?: Prisma.FloatFilter<"Review"> | number
   content?: Prisma.StringFilter<"Review"> | string
   status?: Prisma.EnumReviewStatusFilter<"Review"> | $Enums.ReviewStatus
   rejectionReason?: Prisma.StringNullableFilter<"Review"> | string | null
@@ -394,7 +394,7 @@ export type ReviewScalarWhereWithAggregatesInput = {
   NOT?: Prisma.ReviewScalarWhereWithAggregatesInput | Prisma.ReviewScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Review"> | string
   title?: Prisma.StringWithAggregatesFilter<"Review"> | string
-  rating?: Prisma.IntWithAggregatesFilter<"Review"> | number
+  rating?: Prisma.FloatWithAggregatesFilter<"Review"> | number
   content?: Prisma.StringWithAggregatesFilter<"Review"> | string
   status?: Prisma.EnumReviewStatusWithAggregatesFilter<"Review"> | $Enums.ReviewStatus
   rejectionReason?: Prisma.StringNullableWithAggregatesFilter<"Review"> | string | null
@@ -455,7 +455,7 @@ export type ReviewUncheckedCreateInput = {
 export type ReviewUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  rating?: Prisma.IntFieldUpdateOperationsInput | number
+  rating?: Prisma.FloatFieldUpdateOperationsInput | number
   content?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumReviewStatusFieldUpdateOperationsInput | $Enums.ReviewStatus
   rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -476,7 +476,7 @@ export type ReviewUpdateInput = {
 export type ReviewUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  rating?: Prisma.IntFieldUpdateOperationsInput | number
+  rating?: Prisma.FloatFieldUpdateOperationsInput | number
   content?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumReviewStatusFieldUpdateOperationsInput | $Enums.ReviewStatus
   rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -516,7 +516,7 @@ export type ReviewCreateManyInput = {
 export type ReviewUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  rating?: Prisma.IntFieldUpdateOperationsInput | number
+  rating?: Prisma.FloatFieldUpdateOperationsInput | number
   content?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumReviewStatusFieldUpdateOperationsInput | $Enums.ReviewStatus
   rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -533,7 +533,7 @@ export type ReviewUpdateManyMutationInput = {
 export type ReviewUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  rating?: Prisma.IntFieldUpdateOperationsInput | number
+  rating?: Prisma.FloatFieldUpdateOperationsInput | number
   content?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumReviewStatusFieldUpdateOperationsInput | $Enums.ReviewStatus
   rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -833,7 +833,7 @@ export type ReviewScalarWhereInput = {
   NOT?: Prisma.ReviewScalarWhereInput | Prisma.ReviewScalarWhereInput[]
   id?: Prisma.StringFilter<"Review"> | string
   title?: Prisma.StringFilter<"Review"> | string
-  rating?: Prisma.IntFilter<"Review"> | number
+  rating?: Prisma.FloatFilter<"Review"> | number
   content?: Prisma.StringFilter<"Review"> | string
   status?: Prisma.EnumReviewStatusFilter<"Review"> | $Enums.ReviewStatus
   rejectionReason?: Prisma.StringNullableFilter<"Review"> | string | null
@@ -908,7 +908,7 @@ export type ReviewUpdateToOneWithWhereWithoutCommentsInput = {
 export type ReviewUpdateWithoutCommentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  rating?: Prisma.IntFieldUpdateOperationsInput | number
+  rating?: Prisma.FloatFieldUpdateOperationsInput | number
   content?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumReviewStatusFieldUpdateOperationsInput | $Enums.ReviewStatus
   rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -928,7 +928,7 @@ export type ReviewUpdateWithoutCommentsInput = {
 export type ReviewUncheckedUpdateWithoutCommentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  rating?: Prisma.IntFieldUpdateOperationsInput | number
+  rating?: Prisma.FloatFieldUpdateOperationsInput | number
   content?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumReviewStatusFieldUpdateOperationsInput | $Enums.ReviewStatus
   rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1004,7 +1004,7 @@ export type ReviewUpdateToOneWithWhereWithoutLikesInput = {
 export type ReviewUpdateWithoutLikesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  rating?: Prisma.IntFieldUpdateOperationsInput | number
+  rating?: Prisma.FloatFieldUpdateOperationsInput | number
   content?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumReviewStatusFieldUpdateOperationsInput | $Enums.ReviewStatus
   rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1024,7 +1024,7 @@ export type ReviewUpdateWithoutLikesInput = {
 export type ReviewUncheckedUpdateWithoutLikesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  rating?: Prisma.IntFieldUpdateOperationsInput | number
+  rating?: Prisma.FloatFieldUpdateOperationsInput | number
   content?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumReviewStatusFieldUpdateOperationsInput | $Enums.ReviewStatus
   rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1128,7 +1128,7 @@ export type ReviewCreateManyUserInput = {
 export type ReviewUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  rating?: Prisma.IntFieldUpdateOperationsInput | number
+  rating?: Prisma.FloatFieldUpdateOperationsInput | number
   content?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumReviewStatusFieldUpdateOperationsInput | $Enums.ReviewStatus
   rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1148,7 +1148,7 @@ export type ReviewUpdateWithoutUserInput = {
 export type ReviewUncheckedUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  rating?: Prisma.IntFieldUpdateOperationsInput | number
+  rating?: Prisma.FloatFieldUpdateOperationsInput | number
   content?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumReviewStatusFieldUpdateOperationsInput | $Enums.ReviewStatus
   rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1168,7 +1168,7 @@ export type ReviewUncheckedUpdateWithoutUserInput = {
 export type ReviewUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  rating?: Prisma.IntFieldUpdateOperationsInput | number
+  rating?: Prisma.FloatFieldUpdateOperationsInput | number
   content?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumReviewStatusFieldUpdateOperationsInput | $Enums.ReviewStatus
   rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1204,7 +1204,7 @@ export type ReviewCreateManyMovieInput = {
 export type ReviewUpdateWithoutMovieInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  rating?: Prisma.IntFieldUpdateOperationsInput | number
+  rating?: Prisma.FloatFieldUpdateOperationsInput | number
   content?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumReviewStatusFieldUpdateOperationsInput | $Enums.ReviewStatus
   rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1224,7 +1224,7 @@ export type ReviewUpdateWithoutMovieInput = {
 export type ReviewUncheckedUpdateWithoutMovieInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  rating?: Prisma.IntFieldUpdateOperationsInput | number
+  rating?: Prisma.FloatFieldUpdateOperationsInput | number
   content?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumReviewStatusFieldUpdateOperationsInput | $Enums.ReviewStatus
   rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1244,7 +1244,7 @@ export type ReviewUncheckedUpdateWithoutMovieInput = {
 export type ReviewUncheckedUpdateManyWithoutMovieInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  rating?: Prisma.IntFieldUpdateOperationsInput | number
+  rating?: Prisma.FloatFieldUpdateOperationsInput | number
   content?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumReviewStatusFieldUpdateOperationsInput | $Enums.ReviewStatus
   rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1855,7 +1855,7 @@ export interface Prisma__ReviewClient<T, Null = never, ExtArgs extends runtime.T
 export interface ReviewFieldRefs {
   readonly id: Prisma.FieldRef<"Review", 'String'>
   readonly title: Prisma.FieldRef<"Review", 'String'>
-  readonly rating: Prisma.FieldRef<"Review", 'Int'>
+  readonly rating: Prisma.FieldRef<"Review", 'Float'>
   readonly content: Prisma.FieldRef<"Review", 'String'>
   readonly status: Prisma.FieldRef<"Review", 'ReviewStatus'>
   readonly rejectionReason: Prisma.FieldRef<"Review", 'String'>

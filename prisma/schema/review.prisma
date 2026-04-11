@@ -2,7 +2,7 @@ model Review {
   id        String         @id @default(uuid())
 
   title     String
-  rating    Int
+  rating Float
   content   String         @db.Text
 
   status    ReviewStatus   @default(PENDING)

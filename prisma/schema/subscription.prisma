@@ -10,6 +10,8 @@ model Subscription {
   stripeId      String?   
   stripePriceId String?   
 
+   invoiceUrl          String? 
+
   startDate     DateTime  @default(now())
   endDate       DateTime?
 

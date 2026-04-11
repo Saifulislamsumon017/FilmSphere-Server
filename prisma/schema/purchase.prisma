@@ -12,6 +12,8 @@ model Purchase {
   amount              Float
   stripeTransactionId String?
 
+  invoiceUrl          String? 
+
   expiresAt           DateTime?
 
   createdAt           DateTime        @default(now())

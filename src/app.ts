@@ -9,6 +9,8 @@ import { IndexRoutes } from './app/routes/index.js';
 import { globalErrorHandler } from './app/middleware/globalErrorHandler.js';
 import { notFound } from './app/middleware/notFound.js';
 import { seedAdmin } from './app/seedAdmin/seedAdmin.js';
+import { paymentController } from './app/module/payment/payment.controller.js';
+import { subscriptionController } from './app/module/webhookSubscription/webhooksubscription.controller.js';
 
 const app: Application = express();
 // Initialize default admin account on application startup
@@ -16,6 +18,17 @@ seedAdmin();
 
 app.set('view engine', 'ejs');
 app.set('views', path.resolve(process.cwd(), `src/app/templates`));
+
+app.post(
+  '/api/v1/webhook',
+  express.raw({ type: 'application/json' }),
+  paymentController.handleStripeWebhookEvent,
+);
+app.post(
+  '/api/v1/subscription/webhook',
+  express.raw({ type: 'application/json' }),
+  subscriptionController.handleStripeWebhookEvent,
+);
 
 app.use(
   cors({

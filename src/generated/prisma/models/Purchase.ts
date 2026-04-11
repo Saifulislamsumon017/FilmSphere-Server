@@ -43,6 +43,7 @@ export type PurchaseMinAggregateOutputType = {
   paymentStatus: $Enums.PaymentStatus | null
   amount: number | null
   stripeTransactionId: string | null
+  invoiceUrl: string | null
   expiresAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -57,6 +58,7 @@ export type PurchaseMaxAggregateOutputType = {
   paymentStatus: $Enums.PaymentStatus | null
   amount: number | null
   stripeTransactionId: string | null
+  invoiceUrl: string | null
   expiresAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -71,6 +73,7 @@ export type PurchaseCountAggregateOutputType = {
   paymentStatus: number
   amount: number
   stripeTransactionId: number
+  invoiceUrl: number
   expiresAt: number
   createdAt: number
   updatedAt: number
@@ -95,6 +98,7 @@ export type PurchaseMinAggregateInputType = {
   paymentStatus?: true
   amount?: true
   stripeTransactionId?: true
+  invoiceUrl?: true
   expiresAt?: true
   createdAt?: true
   updatedAt?: true
@@ -109,6 +113,7 @@ export type PurchaseMaxAggregateInputType = {
   paymentStatus?: true
   amount?: true
   stripeTransactionId?: true
+  invoiceUrl?: true
   expiresAt?: true
   createdAt?: true
   updatedAt?: true
@@ -123,6 +128,7 @@ export type PurchaseCountAggregateInputType = {
   paymentStatus?: true
   amount?: true
   stripeTransactionId?: true
+  invoiceUrl?: true
   expiresAt?: true
   createdAt?: true
   updatedAt?: true
@@ -224,6 +230,7 @@ export type PurchaseGroupByOutputType = {
   paymentStatus: $Enums.PaymentStatus
   amount: number
   stripeTransactionId: string | null
+  invoiceUrl: string | null
   expiresAt: Date | null
   createdAt: Date
   updatedAt: Date
@@ -261,6 +268,7 @@ export type PurchaseWhereInput = {
   paymentStatus?: Prisma.EnumPaymentStatusFilter<"Purchase"> | $Enums.PaymentStatus
   amount?: Prisma.FloatFilter<"Purchase"> | number
   stripeTransactionId?: Prisma.StringNullableFilter<"Purchase"> | string | null
+  invoiceUrl?: Prisma.StringNullableFilter<"Purchase"> | string | null
   expiresAt?: Prisma.DateTimeNullableFilter<"Purchase"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Purchase"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Purchase"> | Date | string
@@ -277,6 +285,7 @@ export type PurchaseOrderByWithRelationInput = {
   paymentStatus?: Prisma.SortOrder
   amount?: Prisma.SortOrder
   stripeTransactionId?: Prisma.SortOrderInput | Prisma.SortOrder
+  invoiceUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   expiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -297,6 +306,7 @@ export type PurchaseWhereUniqueInput = Prisma.AtLeast<{
   paymentStatus?: Prisma.EnumPaymentStatusFilter<"Purchase"> | $Enums.PaymentStatus
   amount?: Prisma.FloatFilter<"Purchase"> | number
   stripeTransactionId?: Prisma.StringNullableFilter<"Purchase"> | string | null
+  invoiceUrl?: Prisma.StringNullableFilter<"Purchase"> | string | null
   expiresAt?: Prisma.DateTimeNullableFilter<"Purchase"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Purchase"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Purchase"> | Date | string
@@ -313,6 +323,7 @@ export type PurchaseOrderByWithAggregationInput = {
   paymentStatus?: Prisma.SortOrder
   amount?: Prisma.SortOrder
   stripeTransactionId?: Prisma.SortOrderInput | Prisma.SortOrder
+  invoiceUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   expiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -335,6 +346,7 @@ export type PurchaseScalarWhereWithAggregatesInput = {
   paymentStatus?: Prisma.EnumPaymentStatusWithAggregatesFilter<"Purchase"> | $Enums.PaymentStatus
   amount?: Prisma.FloatWithAggregatesFilter<"Purchase"> | number
   stripeTransactionId?: Prisma.StringNullableWithAggregatesFilter<"Purchase"> | string | null
+  invoiceUrl?: Prisma.StringNullableWithAggregatesFilter<"Purchase"> | string | null
   expiresAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Purchase"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Purchase"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Purchase"> | Date | string
@@ -347,6 +359,7 @@ export type PurchaseCreateInput = {
   paymentStatus?: $Enums.PaymentStatus
   amount: number
   stripeTransactionId?: string | null
+  invoiceUrl?: string | null
   expiresAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -363,6 +376,7 @@ export type PurchaseUncheckedCreateInput = {
   paymentStatus?: $Enums.PaymentStatus
   amount: number
   stripeTransactionId?: string | null
+  invoiceUrl?: string | null
   expiresAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -375,6 +389,7 @@ export type PurchaseUpdateInput = {
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   amount?: Prisma.FloatFieldUpdateOperationsInput | number
   stripeTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -391,6 +406,7 @@ export type PurchaseUncheckedUpdateInput = {
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   amount?: Prisma.FloatFieldUpdateOperationsInput | number
   stripeTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -405,6 +421,7 @@ export type PurchaseCreateManyInput = {
   paymentStatus?: $Enums.PaymentStatus
   amount: number
   stripeTransactionId?: string | null
+  invoiceUrl?: string | null
   expiresAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -417,6 +434,7 @@ export type PurchaseUpdateManyMutationInput = {
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   amount?: Prisma.FloatFieldUpdateOperationsInput | number
   stripeTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -431,6 +449,7 @@ export type PurchaseUncheckedUpdateManyInput = {
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   amount?: Prisma.FloatFieldUpdateOperationsInput | number
   stripeTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -461,6 +480,7 @@ export type PurchaseCountOrderByAggregateInput = {
   paymentStatus?: Prisma.SortOrder
   amount?: Prisma.SortOrder
   stripeTransactionId?: Prisma.SortOrder
+  invoiceUrl?: Prisma.SortOrder
   expiresAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -479,6 +499,7 @@ export type PurchaseMaxOrderByAggregateInput = {
   paymentStatus?: Prisma.SortOrder
   amount?: Prisma.SortOrder
   stripeTransactionId?: Prisma.SortOrder
+  invoiceUrl?: Prisma.SortOrder
   expiresAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -493,6 +514,7 @@ export type PurchaseMinOrderByAggregateInput = {
   paymentStatus?: Prisma.SortOrder
   amount?: Prisma.SortOrder
   stripeTransactionId?: Prisma.SortOrder
+  invoiceUrl?: Prisma.SortOrder
   expiresAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -605,6 +627,7 @@ export type PurchaseCreateWithoutUserInput = {
   paymentStatus?: $Enums.PaymentStatus
   amount: number
   stripeTransactionId?: string | null
+  invoiceUrl?: string | null
   expiresAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -619,6 +642,7 @@ export type PurchaseUncheckedCreateWithoutUserInput = {
   paymentStatus?: $Enums.PaymentStatus
   amount: number
   stripeTransactionId?: string | null
+  invoiceUrl?: string | null
   expiresAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -662,6 +686,7 @@ export type PurchaseScalarWhereInput = {
   paymentStatus?: Prisma.EnumPaymentStatusFilter<"Purchase"> | $Enums.PaymentStatus
   amount?: Prisma.FloatFilter<"Purchase"> | number
   stripeTransactionId?: Prisma.StringNullableFilter<"Purchase"> | string | null
+  invoiceUrl?: Prisma.StringNullableFilter<"Purchase"> | string | null
   expiresAt?: Prisma.DateTimeNullableFilter<"Purchase"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Purchase"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Purchase"> | Date | string
@@ -674,6 +699,7 @@ export type PurchaseCreateWithoutMovieInput = {
   paymentStatus?: $Enums.PaymentStatus
   amount: number
   stripeTransactionId?: string | null
+  invoiceUrl?: string | null
   expiresAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -688,6 +714,7 @@ export type PurchaseUncheckedCreateWithoutMovieInput = {
   paymentStatus?: $Enums.PaymentStatus
   amount: number
   stripeTransactionId?: string | null
+  invoiceUrl?: string | null
   expiresAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -727,6 +754,7 @@ export type PurchaseCreateManyUserInput = {
   paymentStatus?: $Enums.PaymentStatus
   amount: number
   stripeTransactionId?: string | null
+  invoiceUrl?: string | null
   expiresAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -739,6 +767,7 @@ export type PurchaseUpdateWithoutUserInput = {
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   amount?: Prisma.FloatFieldUpdateOperationsInput | number
   stripeTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -753,6 +782,7 @@ export type PurchaseUncheckedUpdateWithoutUserInput = {
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   amount?: Prisma.FloatFieldUpdateOperationsInput | number
   stripeTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -766,6 +796,7 @@ export type PurchaseUncheckedUpdateManyWithoutUserInput = {
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   amount?: Prisma.FloatFieldUpdateOperationsInput | number
   stripeTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -779,6 +810,7 @@ export type PurchaseCreateManyMovieInput = {
   paymentStatus?: $Enums.PaymentStatus
   amount: number
   stripeTransactionId?: string | null
+  invoiceUrl?: string | null
   expiresAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -791,6 +823,7 @@ export type PurchaseUpdateWithoutMovieInput = {
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   amount?: Prisma.FloatFieldUpdateOperationsInput | number
   stripeTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -805,6 +838,7 @@ export type PurchaseUncheckedUpdateWithoutMovieInput = {
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   amount?: Prisma.FloatFieldUpdateOperationsInput | number
   stripeTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -818,6 +852,7 @@ export type PurchaseUncheckedUpdateManyWithoutMovieInput = {
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   amount?: Prisma.FloatFieldUpdateOperationsInput | number
   stripeTransactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -834,6 +869,7 @@ export type PurchaseSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   paymentStatus?: boolean
   amount?: boolean
   stripeTransactionId?: boolean
+  invoiceUrl?: boolean
   expiresAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -850,6 +886,7 @@ export type PurchaseSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   paymentStatus?: boolean
   amount?: boolean
   stripeTransactionId?: boolean
+  invoiceUrl?: boolean
   expiresAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -866,6 +903,7 @@ export type PurchaseSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   paymentStatus?: boolean
   amount?: boolean
   stripeTransactionId?: boolean
+  invoiceUrl?: boolean
   expiresAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -882,12 +920,13 @@ export type PurchaseSelectScalar = {
   paymentStatus?: boolean
   amount?: boolean
   stripeTransactionId?: boolean
+  invoiceUrl?: boolean
   expiresAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type PurchaseOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "movieId" | "purchaseType" | "status" | "paymentStatus" | "amount" | "stripeTransactionId" | "expiresAt" | "createdAt" | "updatedAt", ExtArgs["result"]["purchase"]>
+export type PurchaseOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "movieId" | "purchaseType" | "status" | "paymentStatus" | "amount" | "stripeTransactionId" | "invoiceUrl" | "expiresAt" | "createdAt" | "updatedAt", ExtArgs["result"]["purchase"]>
 export type PurchaseInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   movie?: boolean | Prisma.MovieDefaultArgs<ExtArgs>
@@ -916,6 +955,7 @@ export type $PurchasePayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     paymentStatus: $Enums.PaymentStatus
     amount: number
     stripeTransactionId: string | null
+    invoiceUrl: string | null
     expiresAt: Date | null
     createdAt: Date
     updatedAt: Date
@@ -1352,6 +1392,7 @@ export interface PurchaseFieldRefs {
   readonly paymentStatus: Prisma.FieldRef<"Purchase", 'PaymentStatus'>
   readonly amount: Prisma.FieldRef<"Purchase", 'Float'>
   readonly stripeTransactionId: Prisma.FieldRef<"Purchase", 'String'>
+  readonly invoiceUrl: Prisma.FieldRef<"Purchase", 'String'>
   readonly expiresAt: Prisma.FieldRef<"Purchase", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"Purchase", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Purchase", 'DateTime'>

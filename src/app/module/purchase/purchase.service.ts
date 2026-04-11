@@ -211,7 +211,7 @@ const checkPurchase = async (user: IRequestUser, movieId: string) => {
 };
 
 /* ================= CANCEL ================= */
-const cancelRental = async (user: IRequestUser, purchaseId: string) => {
+const cancelPurchases = async (user: IRequestUser, purchaseId: string) => {
   const purchase = await prisma.purchase.findUnique({
     where: { id: purchaseId },
   });
@@ -241,5 +241,5 @@ export const purchaseService = {
   getAllPurchases,
   getPurchaseHistory,
   checkPurchase,
-  cancelRental,
+  cancelPurchases,
 };
