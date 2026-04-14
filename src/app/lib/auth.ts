@@ -1,69 +1,10 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { prisma } from './prisma.js';
 import { bearer, emailOTP } from 'better-auth/plugins';
 import { envVars } from '../config/env.js';
 import { UserRole, UserStatus } from '../../generated/prisma/enums.js';
-import nodemailer from 'nodemailer';
-import path from 'path';
-import ejs from 'ejs';
-
-// -------------------- EMAIL SENDER --------------------
-const transporter = nodemailer.createTransport({
-  host: envVars.EMAIL_SENDER.SMTP_HOST,
-  secure: true,
-  auth: {
-    user: envVars.EMAIL_SENDER.SMTP_USER,
-    pass: envVars.EMAIL_SENDER.SMTP_PASS,
-  },
-  port: Number(envVars.EMAIL_SENDER.SMTP_PORT),
-});
-
-interface SendEmail {
-  subject: string;
-  to: string;
-  templateName: string;
-  templateData: Record<string, any>;
-  attachment?: {
-    filename: string;
-    content: Buffer | string;
-    contentType: string;
-  }[];
-}
-
-export const sendEmail = async ({
-  subject,
-  to,
-  templateName,
-  templateData,
-  attachment,
-}: SendEmail) => {
-  try {
-    const templatePath = path.resolve(
-      process.cwd(),
-      `src/app/template/${templateName}.ejs`,
-    );
-
-    const html = await ejs.renderFile(templatePath, templateData);
-
-    const info = await transporter.sendMail({
-      from: envVars.EMAIL_SENDER.SMTP_FROM,
-      to,
-      subject,
-      html,
-      attachments: attachment?.map(att => ({
-        filename: att.filename,
-        content: att.content,
-        contentType: att.contentType,
-      })),
-    });
-
-    console.log(`✅ Email sent to ${to} : ${info.messageId}`);
-  } catch (error: any) {
-    console.error('❌ Email sending failed:', error);
-  }
-};
+import { sendEmail } from '../utils/email.js';
 
 // -------------------- BETTER AUTH CONFIG --------------------
 export const auth = betterAuth({
@@ -203,19 +144,19 @@ export const auth = betterAuth({
     signIn: `${envVars.BETTER_AUTH_URL}/api/v1/auth/google/success`,
   },
 
-  trustedOrigins: [
-    process.env.BETTER_AUTH_URL || 'http://localhost:5000',
-    envVars.FRONTEND_URL,
-  ],
-
   // trustedOrigins: [
-  //   ...(envVars.FRONTEND_URL ? envVars.FRONTEND_URL.split(',') : []),
-  //   envVars.BETTER_AUTH_URL,
-  //   'http://localhost:3000',
-  //   'http://localhost:5000',
-  // ]
-  //   .filter(Boolean)
-  //   .map(url => url.trim().replace(/\/$/, '')),
+  //   process.env.BETTER_AUTH_URL || 'http://localhost:5000',
+  //   envVars.FRONTEND_URL,
+  // ],
+
+  trustedOrigins: [
+    ...(envVars.FRONTEND_URL ? envVars.FRONTEND_URL.split(',') : []),
+    envVars.BETTER_AUTH_URL,
+    'http://localhost:3000',
+    'http://localhost:5000',
+  ]
+    .filter(Boolean)
+    .map(url => url.trim().replace(/\/$/, '')),
 
   advanced: {
     useSecureCookies: envVars.NODE_ENV === 'production',

@@ -1,6 +1,7 @@
 import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
 import path from 'path';
+import qs from 'qs';
 import { envVars } from './app/config/env.js';
 import { toNodeHandler } from 'better-auth/node';
 import { auth } from './app/lib/auth.js';
@@ -13,6 +14,9 @@ import { paymentController } from './app/module/payment/payment.controller.js';
 import { subscriptionController } from './app/module/webhookSubscription/webhooksubscription.controller.js';
 
 const app: Application = express();
+
+app.set('query parser', (str: string) => qs.parse(str));
+
 // Initialize default admin account on application startup
 seedAdmin();
 

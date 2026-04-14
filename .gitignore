@@ -8,4 +8,5 @@ dist
 
 .vercel
 /src/generated
+/src/tempData
 .vscode
