@@ -10,3 +10,4 @@ dist
 /src/generated
 /src/tempData
 .vscode
+.env*.local
