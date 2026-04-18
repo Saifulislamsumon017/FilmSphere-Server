@@ -123,14 +123,17 @@ export const auth = betterAuth({
     google: {
       clientId: envVars.GOOGLE_CLIENT_ID,
       clientSecret: envVars.GOOGLE_CLIENT_SECRET,
-      callbackUrl: envVars.GOOGLE_CALLBACK_URL,
-      mapProfileToUser: () => ({
-        role: UserRole.USER,
-        status: UserStatus.ACTIVE,
-        emailVerified: true,
-        isDeleted: false,
-        deletedAt: null,
-      }),
+      // callbackUrl: envVars.GOOGLE_CALLBACK_URL,
+      mapProfileToUser: () => {
+        return {
+          role: UserRole.USER,
+          status: UserStatus.ACTIVE,
+          // needPasswordChange: false,
+          emailVerified: true,
+          isDeleted: false,
+          deletedAt: null,
+        };
+      },
     },
   },
 

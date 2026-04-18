@@ -21,6 +21,17 @@ app.set('query parser', (str: string) => qs.parse(str));
 seedAdmin();
 
 app.set('view engine', 'ejs');
+
+// app.set(
+//   'views',
+//   path.join(
+//     process.cwd(),
+//     process.env.NODE_ENV === 'production'
+//       ? 'dist/app/templates'
+//       : 'src/app/templates',
+//   ),
+// );
+
 app.set('views', path.resolve(process.cwd(), `src/app/templates`));
 
 app.post(
