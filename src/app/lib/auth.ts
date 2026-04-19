@@ -25,6 +25,12 @@ export const auth = betterAuth({
         required: true,
         defaultValue: UserStatus.ACTIVE,
       },
+      needPasswordChange: {
+        type: 'boolean',
+        required: false,
+        defaultValue: false,
+      },
+
       isDeleted: { type: 'boolean', required: true, defaultValue: false },
       deletedAt: { type: 'date', required: false, defaultValue: null },
     },
@@ -128,7 +134,7 @@ export const auth = betterAuth({
         return {
           role: UserRole.USER,
           status: UserStatus.ACTIVE,
-          // needPasswordChange: false,
+          needPasswordChange: false,
           emailVerified: true,
           isDeleted: false,
           deletedAt: null,
