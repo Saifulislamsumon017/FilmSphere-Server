@@ -65,61 +65,57 @@ export const auth = betterAuth({
     emailOTP({
       overrideDefaultEmailVerification: true,
       otpLength: 6,
-      expiresIn: 10 * 60, // ✅ increase for better UX
+      expiresIn: 10 * 60,
 
       async sendVerificationOTP({ email, otp, type }) {
         console.log('🔥 OTP TRIGGERED:', { email, otp, type });
 
-        const user = await prisma.user.findUnique({ where: { email } });
+        const user = await prisma.user.findUnique({
+          where: { email },
+        });
 
-        if (!user) {
-          console.error(`❌ User with email ${email} not found.`);
-          return;
-        }
+        if (!user) return;
 
-        // ❌ Skip admin
-        if (user.role === UserRole.ADMIN) {
-          console.log(`⏭ Skipping OTP for admin ${email}`);
-          return;
-        }
+        if (user.role === UserRole.ADMIN) return;
+
+        const normalizedEmail = email.trim().toLowerCase();
+        const normalizedOtp = String(otp).trim();
 
         try {
-          // ✅ Create verify URL (IMPORTANT)
-          const verifyUrl = `${envVars.FRONTEND_URL}/verify-email?email=${email}&otp=${otp}`;
+          // 🔥 DELETE OLD OTPs (important)
+          await prisma.verification.deleteMany({
+            where: { identifier: normalizedEmail },
+          });
 
-          // ✅ Email Verification OTP
+          // 🔥 SAVE OTP IN YOUR DB
+          await prisma.verification.create({
+            data: {
+              id: crypto.randomUUID(),
+              identifier: normalizedEmail,
+              value: normalizedOtp,
+              expiresAt: new Date(Date.now() + 10 * 60 * 1000), // 10 min
+            },
+          });
+
+          const verifyUrl = `${envVars.FRONTEND_URL}/verify-email?email=${normalizedEmail}&otp=${normalizedOtp}`;
+
+          // 📩 SEND EMAIL
           if (type.includes('email') && !user.emailVerified) {
             await sendEmail({
-              to: email,
+              to: normalizedEmail,
               subject: 'Verify your email (OTP)',
               templateName: 'otp',
               templateData: {
                 name: user.name,
-                otp,
+                otp: normalizedOtp,
                 verifyUrl,
               },
             });
 
-            console.log(`✅ OTP email sent to ${email}`);
-          }
-
-          // ✅ Forget Password OTP
-          if (type.includes('password')) {
-            await sendEmail({
-              to: email,
-              subject: 'Password Reset OTP',
-              templateName: 'otp',
-              templateData: {
-                name: user.name,
-                otp,
-                verifyUrl,
-              },
-            });
-
-            console.log(`✅ Password reset OTP sent to ${email}`);
+            console.log(`✅ OTP sent to ${normalizedEmail}`);
           }
         } catch (err) {
-          console.error('❌ OTP email failed:', err);
+          console.error('❌ OTP send failed:', err);
         }
       },
     }),

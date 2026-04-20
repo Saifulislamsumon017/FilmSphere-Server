@@ -51,30 +51,44 @@ const loginUser = async (payload: ILoginUserPayload) => {
 };
 
 // ✅ Verify Email
-const verifyEmail = async (payload: IVerifyEmailPayload) => {
-  const { email, otp } = payload;
 
-  // OTP check in Verification table
+const verifyEmail = async (payload: IVerifyEmailPayload) => {
+  const email = payload.email.trim().toLowerCase();
+  const otp = String(payload.otp).trim();
+
+  console.log('EMAIL:', email);
+  console.log('OTP:', otp);
+
   const token = await prisma.verification.findFirst({
     where: {
       identifier: email,
       value: otp,
-      expiresAt: { gt: new Date() }, // still valid
+    },
+    orderBy: {
+      createdAt: 'desc',
     },
   });
 
+  console.log('TOKEN:', token);
+
   if (!token) {
-    throw new AppError(status.BAD_REQUEST, 'Invalid or expired OTP');
+    throw new AppError(status.BAD_REQUEST, 'Invalid OTP');
   }
 
-  // Mark user as verified
+  if (token.expiresAt < new Date()) {
+    throw new AppError(status.BAD_REQUEST, 'OTP expired');
+  }
+
   await prisma.user.update({
     where: { email },
-    data: { emailVerified: true },
+    data: {
+      emailVerified: true,
+    },
   });
 
-  // Remove used OTP
-  await prisma.verification.delete({ where: { id: token.id } });
+  await prisma.verification.delete({
+    where: { id: token.id },
+  });
 
   return { message: 'Email verified successfully' };
 };
