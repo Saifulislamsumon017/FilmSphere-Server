@@ -7,7 +7,6 @@ dist
 .env*
 
 .vercel
-
 /src/generated
 /src/tempData
 .vscode
