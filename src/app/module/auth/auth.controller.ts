@@ -12,16 +12,12 @@ import { envVars } from '../../config/env.js';
 import { auth } from '../../lib/auth.js';
 
 // ---------------- Register ----------------
-const registerUser = catchAsync(async (req: Request, res: Response) => {
+
+export const registerUser = catchAsync(async (req: Request, res: Response) => {
   const result = await AuthService.registerUser(req.body);
 
-  // ✅ Set cookies
   tokenUtils.setAccessTokenCookie(res, result.accessToken);
   tokenUtils.setRefreshTokenCookie(res, result.refreshToken);
-
-  if (result.token) {
-    tokenUtils.setBetterAuthSessionCookie(res, result.token);
-  }
 
   sendResponse(res, {
     httpStatusCode: StatusCodes.CREATED,
@@ -31,17 +27,13 @@ const registerUser = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-// ---------------- Login ----------------
-const loginUser = catchAsync(async (req: Request, res: Response) => {
+// ---------------- login ----------------
+
+export const loginUser = catchAsync(async (req: Request, res: Response) => {
   const result = await AuthService.loginUser(req.body);
 
-  // ✅ Set cookies
   tokenUtils.setAccessTokenCookie(res, result.accessToken);
   tokenUtils.setRefreshTokenCookie(res, result.refreshToken);
-
-  if (result.token) {
-    tokenUtils.setBetterAuthSessionCookie(res, result.token);
-  }
 
   sendResponse(res, {
     httpStatusCode: StatusCodes.OK,
@@ -65,7 +57,15 @@ const verifyEmail = catchAsync(async (req: Request, res: Response) => {
 
 // ---------------- Get Me ----------------
 const getMe = catchAsync(async (req: Request, res: Response) => {
-  const result = await AuthService.getMe(req.user);
+  const user = req.user;
+
+  console.log({ user });
+
+  if (!user) {
+    throw new AppError(StatusCodes.UNAUTHORIZED, 'Unauthorized');
+  }
+
+  const result = await AuthService.getMe(user);
 
   sendResponse(res, {
     httpStatusCode: StatusCodes.OK,
@@ -140,12 +140,13 @@ const logoutUser = catchAsync(async (req: Request, res: Response) => {
 
 // ---------------- Forget Password ----------------
 const forgetPassword = catchAsync(async (req: Request, res: Response) => {
-  await AuthService.forgotPassword(req.body.email);
+  const { email } = req.body;
+  await AuthService.forgotPassword(email);
 
   sendResponse(res, {
     httpStatusCode: StatusCodes.OK,
     success: true,
-    message: 'OTP sent successfully',
+    message: 'Password reset OTP sent to email successfully',
   });
 });
 

@@ -4,24 +4,16 @@ import { jwtUtils } from './jwt.js';
 import { envVars } from '../config/env.js';
 import { CookieUtils } from './cookie.js';
 
-//Creating access token
 const getAccessToken = (payload: JwtPayload) => {
-  const accessToken = jwtUtils.createToken(
-    payload,
-    envVars.ACCESS_TOKEN_SECRET,
-    { expiresIn: envVars.ACCESS_TOKEN_EXPIRES_IN } as SignOptions,
-  );
-
-  return accessToken;
+  return jwtUtils.createToken(payload, envVars.ACCESS_TOKEN_SECRET, {
+    expiresIn: envVars.ACCESS_TOKEN_EXPIRES_IN,
+  } as SignOptions);
 };
 
 const getRefreshToken = (payload: JwtPayload) => {
-  const refreshToken = jwtUtils.createToken(
-    payload,
-    envVars.REFRESH_TOKEN_SECRET,
-    { expiresIn: envVars.REFRESH_TOKEN_EXPIRES_IN } as SignOptions,
-  );
-  return refreshToken;
+  return jwtUtils.createToken(payload, envVars.REFRESH_TOKEN_SECRET, {
+    expiresIn: envVars.REFRESH_TOKEN_EXPIRES_IN,
+  } as SignOptions);
 };
 
 const setAccessTokenCookie = (res: Response, token: string) => {
@@ -30,8 +22,7 @@ const setAccessTokenCookie = (res: Response, token: string) => {
     secure: true,
     sameSite: 'none',
     path: '/',
-    //1 day
-    maxAge: 60 * 60 * 24 * 1000,
+    maxAge: 24 * 60 * 60 * 1000,
   });
 };
 
@@ -41,8 +32,7 @@ const setRefreshTokenCookie = (res: Response, token: string) => {
     secure: true,
     sameSite: 'none',
     path: '/',
-    //7d
-    maxAge: 60 * 60 * 24 * 1000 * 7,
+    maxAge: 7 * 24 * 60 * 60 * 1000,
   });
 };
 
@@ -52,8 +42,7 @@ const setBetterAuthSessionCookie = (res: Response, token: string) => {
     secure: true,
     sameSite: 'none',
     path: '/',
-    //1 day
-    maxAge: 60 * 60 * 24 * 1000,
+    maxAge: 24 * 60 * 60 * 1000,
   });
 };
 

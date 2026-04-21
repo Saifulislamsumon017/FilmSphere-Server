@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   ILoginUserPayload,
   IRegisterUserPayload,
@@ -17,37 +16,99 @@ import { UserRole, UserStatus } from '../../../generated/prisma/enums.js';
 import { envVars } from '../../config/env.js';
 import { JwtPayload } from 'jsonwebtoken';
 import { jwtUtils } from '../../utils/jwt.js';
+import { IRequestUser } from '../../interfaces/requestUser.interface.js';
+// import bcrypt from 'bcrypt';
 
-// ✅ Register
-const registerUser = async (payload: IRegisterUserPayload) => {
+// =========================
+// REGISTER USER
+// =========================
+export const registerUser = async (payload: IRegisterUserPayload) => {
+  const { name, email, password } = payload;
+
   const data = await auth.api.signUpEmail({
-    body: payload,
+    body: {
+      name,
+      email,
+      password,
+    },
   });
 
-  if (!data.user) {
+  const user = data?.user;
+
+  if (!user) {
     throw new AppError(status.BAD_REQUEST, 'User registration failed');
   }
 
-  const accessToken = tokenUtils.getAccessToken(data.user);
-  const refreshToken = tokenUtils.getRefreshToken(data.user);
+  const jwtPayload = {
+    userId: user.id,
+    role: user.role as UserRole,
+    name: user.name,
+    email: user.email,
+    status: user.status as UserStatus,
+    isDeleted: user.isDeleted,
+    emailVerified: user.emailVerified,
+  };
 
-  return { ...data, accessToken, refreshToken };
+  const accessToken = tokenUtils.getAccessToken(jwtPayload);
+  const refreshToken = tokenUtils.getRefreshToken(jwtPayload);
+
+  return {
+    user,
+    accessToken,
+    refreshToken,
+  };
 };
 
-// ✅ Login
-const loginUser = async (payload: ILoginUserPayload) => {
+// =========================
+// LOGIN USER
+// =========================
+export const loginUser = async (payload: ILoginUserPayload) => {
+  const { email, password } = payload;
+
   const data = await auth.api.signInEmail({
-    body: payload,
+    body: { email, password },
   });
 
-  if (data.user.status !== UserStatus.ACTIVE) {
+  const user = data?.user;
+
+  // 🔴 safety check
+  if (!user) {
+    throw new AppError(status.UNAUTHORIZED, 'Invalid credentials');
+  }
+
+  // 🚫 BLOCKED
+  if (user.status === UserStatus.BANNED) {
+    throw new AppError(status.FORBIDDEN, 'User is banned');
+  }
+
+  // 🚫 DELETED
+  if (user.status === UserStatus.DELETED || user.isDeleted) {
+    throw new AppError(status.NOT_FOUND, 'User is deleted');
+  }
+
+  // 🚫 NOT ACTIVE
+  if (user.status !== UserStatus.ACTIVE) {
     throw new AppError(status.UNAUTHORIZED, 'User not active');
   }
 
-  const accessToken = tokenUtils.getAccessToken(data.user);
-  const refreshToken = tokenUtils.getRefreshToken(data.user);
+  const jwtPayload = {
+    userId: user.id,
+    role: user.role as UserRole,
+    name: user.name,
+    email: user.email,
+    status: user.status as UserStatus,
+    isDeleted: user.isDeleted,
+    emailVerified: user.emailVerified,
+  };
 
-  return { ...data, accessToken, refreshToken };
+  const accessToken = tokenUtils.getAccessToken(jwtPayload);
+  const refreshToken = tokenUtils.getRefreshToken(jwtPayload);
+
+  return {
+    user,
+    accessToken,
+    refreshToken,
+  };
 };
 
 // ✅ Verify Email
@@ -94,16 +155,24 @@ const verifyEmail = async (payload: IVerifyEmailPayload) => {
 };
 
 // ✅ Get Me
-const getMe = async (user: any) => {
-  const userData = await prisma.user.findUnique({
-    where: { id: user.userId },
+const getMe = async (user: IRequestUser) => {
+  const userId = user?.userId;
+
+  if (!userId) {
+    throw new AppError(status.UNAUTHORIZED, 'Unauthorized user');
+  }
+
+  const isUserExists = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
   });
 
-  if (!userData) {
+  if (!isUserExists) {
     throw new AppError(status.NOT_FOUND, 'User not found');
   }
 
-  return userData;
+  return isUserExists;
 };
 
 // ---------------- Refresh Token ----------------
@@ -111,7 +180,10 @@ const getMe = async (user: any) => {
 const getNewToken = async (payload: IGetNewTokenPayload) => {
   const { refreshToken, sessionToken } = payload;
 
-  const isSessionTokenExists = await prisma.session.findUnique({
+  // =========================
+  // CHECK SESSION
+  // =========================
+  const session = await prisma.session.findUnique({
     where: {
       token: sessionToken,
     },
@@ -120,60 +192,71 @@ const getNewToken = async (payload: IGetNewTokenPayload) => {
     },
   });
 
-  if (!isSessionTokenExists) {
+  if (!session) {
     throw new AppError(status.UNAUTHORIZED, 'Invalid session token');
   }
 
+  // =========================
+  // VERIFY REFRESH TOKEN
+  // =========================
   const verifiedRefreshToken = jwtUtils.verifyToken(
     refreshToken,
     envVars.REFRESH_TOKEN_SECRET,
   );
 
-  if (!verifiedRefreshToken.success && verifiedRefreshToken.error) {
+  if (!verifiedRefreshToken.success || !verifiedRefreshToken.data) {
     throw new AppError(status.UNAUTHORIZED, 'Invalid refresh token');
   }
 
   const data = verifiedRefreshToken.data as JwtPayload;
 
-  // ✅ extra security (recommended)
-  if (data.userId !== isSessionTokenExists.userId) {
+  // =========================
+  // SECURITY CHECK
+  // =========================
+  if (!data.userId) {
+    throw new AppError(status.UNAUTHORIZED, 'Invalid token payload');
+  }
+
+  if (data.userId !== session.userId) {
     throw new AppError(status.UNAUTHORIZED, 'Token mismatch');
   }
 
-  const newAccessToken = tokenUtils.getAccessToken({
+  const jwtPayload = {
     userId: data.userId,
     role: data.role,
     name: data.name,
     email: data.email,
-    status: data.status,
+    status: data.status as UserStatus,
     isDeleted: data.isDeleted,
     emailVerified: data.emailVerified,
-  });
+  };
 
-  const newRefreshToken = tokenUtils.getRefreshToken({
-    userId: data.userId,
-    role: data.role,
-    name: data.name,
-    email: data.email,
-    status: data.status,
-    isDeleted: data.isDeleted,
-    emailVerified: data.emailVerified,
-  });
+  // =========================
+  // CREATE NEW TOKENS
+  // =========================
 
-  const { token } = await prisma.session.update({
+  const newAccessToken = tokenUtils.getAccessToken(jwtPayload);
+  const newRefreshToken = tokenUtils.getRefreshToken(jwtPayload);
+
+  // =========================
+  // UPDATE SESSION
+  // =========================
+  const updatedSession = await prisma.session.update({
     where: {
       token: sessionToken,
     },
     data: {
       expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-      updatedAt: new Date(),
     },
   });
 
+  // =========================
+  // RETURN RESULT
+  // =========================
   return {
     accessToken: newAccessToken,
     refreshToken: newRefreshToken,
-    sessionToken: token,
+    sessionToken: updatedSession.token,
   };
 };
 
@@ -186,24 +269,76 @@ const logoutUser = async (sessionToken: string) => {
   });
 };
 
-// ✅ Forgot Password
+// ===================== FORGET PASSWORD =====================
 const forgotPassword = async (email: string) => {
+  const normalizedEmail = email.trim().toLowerCase();
+
+  const user = await prisma.user.findUnique({
+    where: { email: normalizedEmail },
+  });
+
+  if (!user) {
+    throw new AppError(status.NOT_FOUND, 'User not found');
+  }
+
+  if (!user.emailVerified) {
+    throw new AppError(status.BAD_REQUEST, 'Email not verified');
+  }
+
+  if (user.isDeleted || user.status === UserStatus.DELETED) {
+    throw new AppError(status.NOT_FOUND, 'User not found');
+  }
+
+  // ✅ trigger OTP
   await auth.api.requestPasswordResetEmailOTP({
-    body: { email },
+    body: {
+      email: normalizedEmail,
+    },
   });
 };
+// ===================== RESET PASSWORD =====================
 
-// ✅ Reset Password
 const resetPassword = async (payload: IResetPasswordPayload) => {
   const { email, otp, newPassword } = payload;
 
-  await auth.api.resetPasswordEmailOTP({
-    body: {
-      email,
-      otp,
-      password: newPassword,
+  const normalizedEmail = email.trim().toLowerCase();
+
+  // 1️⃣ OTP verify
+  const record = await prisma.verification.findFirst({
+    where: {
+      identifier: normalizedEmail,
+      value: otp,
+      expiresAt: { gt: new Date() },
     },
   });
+
+  if (!record) {
+    throw new Error('Invalid or expired OTP');
+  }
+
+  // 2️⃣ user check
+  const user = await prisma.user.findUnique({
+    where: { email: normalizedEmail },
+  });
+
+  if (!user) {
+    throw new Error('User not found');
+  }
+
+  // 3️⃣ 🔥 IMPORTANT: USE BETTER AUTH RESET API
+  await auth.api.resetPassword({
+    body: {
+      token: record.value,
+      newPassword,
+    },
+  });
+
+  // 4️⃣ cleanup OTP
+  await prisma.verification.deleteMany({
+    where: { identifier: normalizedEmail },
+  });
+
+  return true;
 };
 
 // ---------------- Google Login Success ----------------

@@ -6,33 +6,24 @@ const createToken = (
   secret: string,
   { expiresIn }: SignOptions,
 ) => {
-  const token = jwt.sign(payload, secret, { expiresIn });
-  return token;
+  return jwt.sign(payload, secret, { expiresIn });
 };
 
 const verifyToken = (token: string, secret: string) => {
   try {
-    const decoded = jwt.verify(token, secret) as JwtPayload;
     return {
       success: true,
-      data: decoded,
+      data: jwt.verify(token, secret) as JwtPayload,
     };
   } catch (error: any) {
     return {
       success: false,
       message: error.message,
-      error,
     };
   }
-};
-
-const decodeToken = (token: string) => {
-  const decoded = jwt.decode(token) as JwtPayload;
-  return decoded;
 };
 
 export const jwtUtils = {
   createToken,
   verifyToken,
-  decodeToken,
 };
