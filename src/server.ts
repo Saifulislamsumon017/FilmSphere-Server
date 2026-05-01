@@ -2,11 +2,11 @@
 import app from './app.js';
 import { envVars } from './app/config/env.js';
 import { prisma } from './app/lib/prisma.js';
-import { seedAdmin } from './app/seedAdmin/seedAdmin.js';
+// import { seedAdmin } from './app/seedAdmin/seedAdmin.js';
 
 const startServer = async () => {
   try {
-    await seedAdmin();
+    // await seedAdmin();
     await prisma.$connect();
     console.log('✅ Database connected');
 

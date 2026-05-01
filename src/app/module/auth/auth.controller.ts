@@ -14,7 +14,11 @@ import { auth } from '../../lib/auth.js';
 // ---------------- Register ----------------
 
 export const registerUser = catchAsync(async (req: Request, res: Response) => {
-  const result = await AuthService.registerUser(req.body);
+  const payload = req.body;
+
+  // console.log(payload);
+
+  const result = await AuthService.registerUser(payload);
 
   tokenUtils.setAccessTokenCookie(res, result.accessToken);
   tokenUtils.setRefreshTokenCookie(res, result.refreshToken);
@@ -30,7 +34,8 @@ export const registerUser = catchAsync(async (req: Request, res: Response) => {
 // ---------------- login ----------------
 
 export const loginUser = catchAsync(async (req: Request, res: Response) => {
-  const result = await AuthService.loginUser(req.body);
+  const payload = req.body;
+  const result = await AuthService.loginUser(payload);
 
   tokenUtils.setAccessTokenCookie(res, result.accessToken);
   tokenUtils.setRefreshTokenCookie(res, result.refreshToken);
@@ -45,7 +50,8 @@ export const loginUser = catchAsync(async (req: Request, res: Response) => {
 
 // ---------------- Verify Email ----------------
 const verifyEmail = catchAsync(async (req: Request, res: Response) => {
-  const result = await AuthService.verifyEmail(req.body);
+  const payload = req.body;
+  const result = await AuthService.verifyEmail(payload);
 
   sendResponse(res, {
     httpStatusCode: StatusCodes.OK,
@@ -59,7 +65,7 @@ const verifyEmail = catchAsync(async (req: Request, res: Response) => {
 const getMe = catchAsync(async (req: Request, res: Response) => {
   const user = req.user;
 
-  console.log({ user });
+  // console.log({ user });
 
   if (!user) {
     throw new AppError(StatusCodes.UNAUTHORIZED, 'Unauthorized');
@@ -112,7 +118,7 @@ const getNewToken = catchAsync(async (req: Request, res: Response) => {
 const logoutUser = catchAsync(async (req: Request, res: Response) => {
   const sessionToken = req.cookies['better-auth.session_token'];
 
-  await AuthService.logoutUser(sessionToken);
+  const result = await AuthService.logoutUser(sessionToken);
 
   // ✅ Clear all cookies
   CookieUtils.clearCookie(res, 'accessToken', {
@@ -135,29 +141,33 @@ const logoutUser = catchAsync(async (req: Request, res: Response) => {
     httpStatusCode: StatusCodes.OK,
     success: true,
     message: 'User logged out successfully',
+    data: result,
   });
 });
 
 // ---------------- Forget Password ----------------
 const forgetPassword = catchAsync(async (req: Request, res: Response) => {
   const { email } = req.body;
-  await AuthService.forgotPassword(email);
+  const result = await AuthService.forgotPassword(email);
 
   sendResponse(res, {
     httpStatusCode: StatusCodes.OK,
     success: true,
     message: 'Password reset OTP sent to email successfully',
+    data: result,
   });
 });
 
 // ---------------- Reset Password ----------------
 const resetPassword = catchAsync(async (req: Request, res: Response) => {
-  await AuthService.resetPassword(req.body);
+  const payload = req.body;
+  await AuthService.resetPassword(payload);
 
   sendResponse(res, {
     httpStatusCode: StatusCodes.OK,
     success: true,
     message: 'Password reset successful',
+    data: null,
   });
 });
 

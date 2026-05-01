@@ -69,10 +69,7 @@ export const auth = betterAuth({
     autoSignInAfterVerification: true,
   },
 
-  // ===============================
-  // PLUGINS
-  // ===============================
-
+  // ================= PLUGINS =================
   plugins: [
     bearer(),
 
