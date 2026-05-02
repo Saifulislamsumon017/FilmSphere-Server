@@ -42,6 +42,12 @@ router.post(
 );
 
 router.post(
+  '/change-password',
+  checkAuth(UserRole.ADMIN, UserRole.USER),
+  AuthController.changePassword,
+);
+
+router.post(
   '/forget-password',
   validateRequest(AuthValidation.forgetPasswordSchema),
   AuthController.forgetPassword,

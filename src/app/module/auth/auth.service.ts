@@ -2,10 +2,10 @@ import {
   ILoginUserPayload,
   IRegisterUserPayload,
   IVerifyEmailPayload,
-  IResetPasswordPayload,
   IGetNewTokenPayload,
   IGoogleSession,
   IGoogleLoginResponse,
+  IChangePasswordPayload,
 } from './auth.interface.js';
 import { auth } from '../../lib/auth.js';
 import AppError from '../../errorHelpers/AppError.js';
@@ -17,11 +17,9 @@ import { envVars } from '../../config/env.js';
 import { JwtPayload } from 'jsonwebtoken';
 import { jwtUtils } from '../../utils/jwt.js';
 import { IRequestUser } from '../../interfaces/requestUser.interface.js';
-// import bcrypt from 'bcrypt';
 
-// =========================
-// REGISTER USER
-// =========================
+// ========================= REGISTER USER =========================
+
 export const registerUser = async (payload: IRegisterUserPayload) => {
   const { name, email, password } = payload;
 
@@ -59,10 +57,9 @@ export const registerUser = async (payload: IRegisterUserPayload) => {
   };
 };
 
-// =========================
-// LOGIN USER
-// =========================
-export const loginUser = async (payload: ILoginUserPayload) => {
+// ========================= LOGIN USER =========================
+
+const loginUser = async (payload: ILoginUserPayload) => {
   const { email, password } = payload;
 
   const data = await auth.api.signInEmail({
@@ -111,14 +108,14 @@ export const loginUser = async (payload: ILoginUserPayload) => {
   };
 };
 
-// ✅ Verify Email
+//===================== VERIFY EMAIL =====================
 
 const verifyEmail = async (payload: IVerifyEmailPayload) => {
   const email = payload.email.trim().toLowerCase();
   const otp = String(payload.otp).trim();
 
-  console.log('EMAIL:', email);
-  console.log('OTP:', otp);
+  // console.log('EMAIL:', email);
+  // console.log('OTP:', otp);
 
   const token = await prisma.verification.findFirst({
     where: {
@@ -130,7 +127,7 @@ const verifyEmail = async (payload: IVerifyEmailPayload) => {
     },
   });
 
-  console.log('TOKEN:', token);
+  // console.log('TOKEN:', token);
 
   if (!token) {
     throw new AppError(status.BAD_REQUEST, 'Invalid OTP');
@@ -154,7 +151,8 @@ const verifyEmail = async (payload: IVerifyEmailPayload) => {
   return { message: 'Email verified successfully' };
 };
 
-// ✅ Get Me
+//===================== GET ME =====================
+
 const getMe = async (user: IRequestUser) => {
   const userId = user?.userId;
 
@@ -175,14 +173,12 @@ const getMe = async (user: IRequestUser) => {
   return isUserExists;
 };
 
-// ---------------- Refresh Token ----------------
+//===================== REFRESH TOKEN =====================
 
 const getNewToken = async (payload: IGetNewTokenPayload) => {
   const { refreshToken, sessionToken } = payload;
 
-  // =========================
-  // CHECK SESSION
-  // =========================
+  // ========================= CHECK SESSION =========================
   const session = await prisma.session.findUnique({
     where: {
       token: sessionToken,
@@ -196,9 +192,8 @@ const getNewToken = async (payload: IGetNewTokenPayload) => {
     throw new AppError(status.UNAUTHORIZED, 'Invalid session token');
   }
 
-  // =========================
-  // VERIFY REFRESH TOKEN
-  // =========================
+  // ========================= VERIFY REFRESH TOKEN =========================
+
   const verifiedRefreshToken = jwtUtils.verifyToken(
     refreshToken,
     envVars.REFRESH_TOKEN_SECRET,
@@ -210,9 +205,7 @@ const getNewToken = async (payload: IGetNewTokenPayload) => {
 
   const data = verifiedRefreshToken.data as JwtPayload;
 
-  // =========================
-  // SECURITY CHECK
-  // =========================
+  // ========================= SECURITY CHECK =========================
   if (!data.userId) {
     throw new AppError(status.UNAUTHORIZED, 'Invalid token payload');
   }
@@ -231,16 +224,13 @@ const getNewToken = async (payload: IGetNewTokenPayload) => {
     emailVerified: data.emailVerified,
   };
 
-  // =========================
-  // CREATE NEW TOKENS
-  // =========================
+  // ========================= CREATE NEW TOKENS =========================
 
   const newAccessToken = tokenUtils.getAccessToken(jwtPayload);
   const newRefreshToken = tokenUtils.getRefreshToken(jwtPayload);
 
-  // =========================
-  // UPDATE SESSION
-  // =========================
+  // ========================= UPDATE SESSION =========================
+
   const updatedSession = await prisma.session.update({
     where: {
       token: sessionToken,
@@ -250,9 +240,7 @@ const getNewToken = async (payload: IGetNewTokenPayload) => {
     },
   });
 
-  // =========================
-  // RETURN RESULT
-  // =========================
+  // ========================= RETURN RESULT =========================
   return {
     accessToken: newAccessToken,
     refreshToken: newRefreshToken,
@@ -260,7 +248,8 @@ const getNewToken = async (payload: IGetNewTokenPayload) => {
   };
 };
 
-// ✅ Logout
+// ===================== LOGOUT =====================
+
 const logoutUser = async (sessionToken: string) => {
   return await auth.api.signOut({
     headers: new Headers({
@@ -269,79 +258,191 @@ const logoutUser = async (sessionToken: string) => {
   });
 };
 
-// ===================== FORGET PASSWORD =====================
-const forgotPassword = async (email: string) => {
-  const normalizedEmail = email.trim().toLowerCase();
+// ===================== CHANGE PASSWORD =====================
 
-  const user = await prisma.user.findUnique({
-    where: { email: normalizedEmail },
+const changePassword = async (
+  payload: IChangePasswordPayload,
+  sessionToken: string,
+) => {
+  const session = await auth.api.getSession({
+    headers: new Headers({
+      Authorization: `Bearer ${sessionToken}`,
+    }),
   });
 
-  if (!user) {
+  if (!session) {
+    throw new AppError(status.UNAUTHORIZED, 'Invalid session token');
+  }
+
+  const { currentPassword, newPassword } = payload;
+
+  const result = await auth.api.changePassword({
+    body: {
+      currentPassword,
+      newPassword,
+      revokeOtherSessions: true,
+    },
+    headers: new Headers({
+      Authorization: `Bearer ${sessionToken}`,
+    }),
+  });
+
+  if (session.user.needPasswordChange) {
+    await prisma.user.update({
+      where: {
+        id: session.user.id,
+      },
+      data: {
+        needPasswordChange: false,
+      },
+    });
+  }
+
+  const jwtPayload = {
+    userId: session.user.id,
+    role: session.user.role,
+    name: session.user.name,
+    email: session.user.email,
+    status: session.user.status,
+    isDeleted: session.user.isDeleted,
+    emailVerified: session.user.emailVerified,
+  };
+
+  const accessToken = tokenUtils.getAccessToken(jwtPayload);
+
+  const refreshToken = tokenUtils.getRefreshToken(jwtPayload);
+
+  return {
+    ...result,
+    accessToken,
+    refreshToken,
+  };
+};
+
+// ===================== FORGET PASSWORD =====================
+
+// const forgotPassword = async (email: string) => {
+//   const normalizedEmail = email.trim().toLowerCase();
+
+//   const user = await prisma.user.findUnique({
+//     where: { email: normalizedEmail },
+//   });
+
+//   if (!user) {
+//     throw new AppError(status.NOT_FOUND, 'User not found');
+//   }
+
+//   if (!user.emailVerified) {
+//     throw new AppError(status.BAD_REQUEST, 'Email not verified');
+//   }
+
+//   if (user.isDeleted || user.status === UserStatus.DELETED) {
+//     throw new AppError(status.NOT_FOUND, 'User not found');
+//   }
+
+//   const otpRequestResult = await auth.api.requestPasswordResetEmailOTP({
+//     body: { email: normalizedEmail },
+//   });
+
+//   if (!otpRequestResult) {
+//     throw new AppError(status.BAD_REQUEST, 'Failed to send password reset OTP');
+//   }
+
+//   return true;
+// };
+
+const forgetPassword = async (email: string) => {
+  const isUserExist = await prisma.user.findUnique({
+    where: {
+      email,
+    },
+  });
+
+  if (!isUserExist) {
     throw new AppError(status.NOT_FOUND, 'User not found');
   }
 
-  if (!user.emailVerified) {
+  if (!isUserExist.emailVerified) {
     throw new AppError(status.BAD_REQUEST, 'Email not verified');
   }
 
-  if (user.isDeleted || user.status === UserStatus.DELETED) {
+  if (isUserExist.isDeleted || isUserExist.status === UserStatus.DELETED) {
     throw new AppError(status.NOT_FOUND, 'User not found');
   }
 
-  // ✅ trigger OTP
-  await auth.api.requestPasswordResetEmailOTP({
+  const otpRequestResult = await auth.api.requestPasswordResetEmailOTP({
     body: {
-      email: normalizedEmail,
-    },
-  });
-};
-// ===================== RESET PASSWORD =====================
-
-const resetPassword = async (payload: IResetPasswordPayload) => {
-  const { email, otp, newPassword } = payload;
-
-  const normalizedEmail = email.trim().toLowerCase();
-
-  // 1️⃣ OTP verify
-  const record = await prisma.verification.findFirst({
-    where: {
-      identifier: normalizedEmail,
-      value: otp,
-      expiresAt: { gt: new Date() },
+      email,
     },
   });
 
-  if (!record) {
-    throw new Error('Invalid or expired OTP');
+  if (!otpRequestResult) {
+    throw new AppError(status.BAD_REQUEST, 'Failed to send password reset OTP');
   }
-
-  // 2️⃣ user check
-  const user = await prisma.user.findUnique({
-    where: { email: normalizedEmail },
-  });
-
-  if (!user) {
-    throw new Error('User not found');
-  }
-
-  // 3️⃣ 🔥 IMPORTANT: USE BETTER AUTH RESET API
-  await auth.api.resetPassword({
-    body: {
-      token: record.value,
-      newPassword,
-    },
-  });
-
-  // 4️⃣ cleanup OTP
-  await prisma.verification.deleteMany({
-    where: { identifier: normalizedEmail },
-  });
 
   return true;
 };
 
-// ---------------- Google Login Success ----------------
+// ===================== RESET PASSWORD =====================
+
+const resetPassword = async (
+  email: string,
+  otp: string,
+  newPassword: string,
+) => {
+  const isUserExist = await prisma.user.findUnique({
+    where: { email },
+  });
+
+  if (!isUserExist) {
+    throw new AppError(status.NOT_FOUND, 'User not found');
+  }
+
+  if (!isUserExist.emailVerified) {
+    throw new AppError(status.BAD_REQUEST, 'Email not verified');
+  }
+
+  if (isUserExist.isDeleted || isUserExist.status === UserStatus.DELETED) {
+    throw new AppError(status.NOT_FOUND, 'User not found');
+  }
+
+  const resetResult = await auth.api.resetPasswordEmailOTP({
+    body: {
+      email,
+      otp,
+      password: newPassword,
+    },
+  });
+
+  if (!resetResult) {
+    throw new AppError(
+      status.BAD_REQUEST,
+      'Invalid OTP or password reset failed',
+    );
+  }
+
+  // optional flag cleanup
+  if (isUserExist.needPasswordChange) {
+    await prisma.user.update({
+      where: { id: isUserExist.id },
+      data: {
+        needPasswordChange: false,
+      },
+    });
+  }
+
+  // logout all sessions
+  await prisma.session.deleteMany({
+    where: {
+      userId: isUserExist.id,
+    },
+  });
+
+  return resetResult;
+};
+
+// ===================== GOOGLE LOGIN SUCCESS =====================
+
 const googleLoginSuccess = async (
   session: IGoogleSession,
 ): Promise<IGoogleLoginResponse> => {
@@ -384,7 +485,8 @@ export const AuthService = {
   getMe,
   getNewToken,
   logoutUser,
+  changePassword,
   googleLoginSuccess,
-  forgotPassword,
+  forgetPassword,
   resetPassword,
 };

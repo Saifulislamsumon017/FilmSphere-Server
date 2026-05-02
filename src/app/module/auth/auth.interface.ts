@@ -14,6 +14,11 @@ export interface IVerifyEmailPayload {
   otp: string;
 }
 
+export interface IChangePasswordPayload {
+  currentPassword: string;
+  newPassword: string;
+}
+
 export interface IForgetPasswordPayload {
   email: string;
 }

@@ -33,7 +33,7 @@ export const registerUser = catchAsync(async (req: Request, res: Response) => {
 
 // ---------------- login ----------------
 
-export const loginUser = catchAsync(async (req: Request, res: Response) => {
+const loginUser = catchAsync(async (req: Request, res: Response) => {
   const payload = req.body;
   const result = await AuthService.loginUser(payload);
 
@@ -145,10 +145,35 @@ const logoutUser = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+// ===================== CHANGE PASSWORD =====================
+
+const changePassword = catchAsync(async (req: Request, res: Response) => {
+  const payload = req.body;
+  const betterAuthSessionToken = req.cookies['better-auth.session_token'];
+
+  const result = await AuthService.changePassword(
+    payload,
+    betterAuthSessionToken,
+  );
+
+  const { accessToken, refreshToken, token } = result;
+
+  tokenUtils.setAccessTokenCookie(res, accessToken);
+  tokenUtils.setRefreshTokenCookie(res, refreshToken);
+  tokenUtils.setBetterAuthSessionCookie(res, token as string);
+
+  sendResponse(res, {
+    httpStatusCode: StatusCodes.OK,
+    success: true,
+    message: 'Password changed successfully',
+    data: result,
+  });
+});
+
 // ---------------- Forget Password ----------------
 const forgetPassword = catchAsync(async (req: Request, res: Response) => {
   const { email } = req.body;
-  const result = await AuthService.forgotPassword(email);
+  const result = await AuthService.forgetPassword(email);
 
   sendResponse(res, {
     httpStatusCode: StatusCodes.OK,
@@ -160,14 +185,15 @@ const forgetPassword = catchAsync(async (req: Request, res: Response) => {
 
 // ---------------- Reset Password ----------------
 const resetPassword = catchAsync(async (req: Request, res: Response) => {
-  const payload = req.body;
-  await AuthService.resetPassword(payload);
+  const { email, otp, newPassword } = req.body;
+
+  const result = await AuthService.resetPassword(email, otp, newPassword);
 
   sendResponse(res, {
     httpStatusCode: StatusCodes.OK,
     success: true,
-    message: 'Password reset successful',
-    data: null,
+    message: 'Password reset successfully',
+    data: result,
   });
 });
 
@@ -232,6 +258,7 @@ export const AuthController = {
   getMe,
   getNewToken,
   logoutUser,
+  changePassword,
   forgetPassword,
   resetPassword,
   googleLogin,
